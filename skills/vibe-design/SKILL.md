@@ -145,20 +145,25 @@ If any check fails, the design is over-specified. Trim it.
 
 ## Step 7: Reflect into CLAUDE.md
 
-The design document is a working artifact for review. CLAUDE.md is what AI reads during implementation. After the design is approved, reflect decisions into CLAUDE.md:
+CLAUDE.md is a **work instruction manual**, not a design document. It tells AI "do this" — not "we decided this because..." After the design is approved, extract only the actionable directives:
 
-| Design Document Section | CLAUDE.md Section |
-|------------------------|-------------------|
-| Tech Stack | `## 기술 스택` |
-| Architectural Decisions | `## 아키텍처` |
-| Constraints | `## 규칙` |
-| Scope (what's in/out) | `## 워크플로우` or milestone notes |
+**What goes into CLAUDE.md:**
+- Tech stack as facts: `서버: Node.js + Express + TypeScript`
+- Architecture as one-line summary: `서비스 에이전트가 대화, Claude Code가 코딩`
+- Constraints as rules: `Claude Code가 npm run dev 하지 않음`
+- Directory structure, naming conventions, workflow steps
 
-**Rules for CLAUDE.md reflection:**
-- Strip the "because [why]" rationale — CLAUDE.md states facts, not reasoning
+**What stays ONLY in the design document (docs/plans/):**
+- Rationale ("because...")
+- Alternative approaches considered
+- Milestone scope boundaries
+- Open questions and deferred decisions
+
+**Rules for reflection:**
+- Strip all rationale. CLAUDE.md states facts and rules, not reasoning.
 - Keep it imperative: "서버는 TypeScript로 작성한다" not "TypeScript를 선택했는데 이유는..."
 - If CLAUDE.md already has the relevant sections, UPDATE them. Do not create duplicates.
-- Design document stays in `docs/plans/` as history. CLAUDE.md is the living source of truth.
+- The design document is history. CLAUDE.md is the living source of truth.
 
 ## Workflow Summary
 
