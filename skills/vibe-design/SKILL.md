@@ -17,6 +17,7 @@ Over-specification is as harmful as under-specification. Pseudocode in design do
 
 - 유저가 `@docs/features/` 등으로 지정 → 해당 파일만 작업 대상
 - 지정 없이 "설계해줘" → "어떤 문서/영역을 대상으로 할까요?" 재질문
+- 해당 영역에 기존 설계 문서가 있으면 → 새 파일을 만들지 말고 기존 문서를 업데이트. 새 파일 생성이 필요한지 유저에게 확인할 것.
 - **전달받은 문서 외 다른 문서를 참조해서 스코프를 판단하지 말 것.** 다른 문서 참조가 필요하면 유저에게 물어볼 것.
 
 ## Step 1: Determine Scope Level
@@ -112,7 +113,7 @@ When writing a Level 2 design document, follow these principles strictly. Read `
 
 ## Step 5: Write the Design Document
 
-Use this template. Save to `docs/plans/YYYY-MM-DD-<topic>-design.md`.
+기존 설계 문서가 있으면 해당 문서를 업데이트한다. 새 영역이면 프로젝트의 설계 문서 디렉토리에 새 파일을 생성한다. 저장 경로는 프로젝트의 기존 구조를 따를 것 (예: `docs/features/`, `docs/design/` 등). 유저에게 확인 후 진행.
 
 ```markdown
 # [Feature/Milestone Name]
