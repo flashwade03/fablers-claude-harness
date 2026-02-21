@@ -1,6 +1,6 @@
 ---
 name: design-review
-description: This skill should be used when the user explicitly asks to "review my design", "score this design", "evaluate my design", "rate this design", "design quality check", "설계 리뷰해줘", "설계 평가해줘", "이 설계 괜찮아?", "설계 점수 매겨줘". Scores design documents against 6 vibe coding axes (decision purity, rationale, decision maturity, context budget, constraint quality, CLAUDE.md alignment) and outputs Grade (S~F), Score (0-100), and detailed feedback.
+description: This skill should be used when the user explicitly asks to "review my design", "score this design", "evaluate my design", "rate this design", "design quality check", "설계 리뷰해줘", "설계 평가해줘", "이 설계 괜찮아?", "설계 점수 매겨줘". Accepts a file path argument as the review target (e.g., "/design-review docs/features/file.md"). If no argument is provided, ask the user which document to review before proceeding. Scores design documents against 6 vibe coding axes (decision purity, rationale, decision maturity, context budget, constraint quality, CLAUDE.md alignment) and outputs Grade (S~F), Score (0-100), and detailed feedback.
 ---
 
 # Design Review
@@ -11,7 +11,7 @@ Score a design document against vibe coding principles. Output: Grade (S~F), Sco
 
 ## Input
 
-유저가 지정한 문서만 평가 대상으로 한다. 유저가 대상 문서를 명시하지 않으면 재질문할 것. 다른 문서를 자동 탐색하지 말 것. CLAUDE.md는 Axis 6 평가를 위해 읽는다.
+인자로 파일 경로가 전달되면 해당 문서를 평가 대상으로 한다. 인자가 없고, 유저가 대상 문서를 명시하지 않았으면 반드시 재질문할 것. **대상 문서가 확정되기 전에 평가를 시작하지 말 것.** 다른 문서를 자동 탐색하지 말 것. CLAUDE.md는 Axis 6 평가를 위해 읽는다.
 
 ## Step 1: Score Each Axis
 
