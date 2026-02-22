@@ -1,6 +1,6 @@
 ---
 name: vibe-design
-description: This skill should be used when the user explicitly asks to "design a feature", "create architecture", "plan a system", "how much design do I need?", "should I write a spec?", "is this over-engineered?", "설계해줘", "아키텍처 잡아줘", "설계 범위 정해줘", "기획 문서 써야 할까?". This skill must be explicitly invoked — do NOT trigger automatically before plan mode or implementation. Guides design scope to match requirement size using 3 levels (no design, inline design, document design), preventing over-specification that kills vibe coding productivity.
+description: This skill should be used when the user explicitly asks to "design a feature", "create architecture", "plan a system", "how much design do I need?", "should I write a spec?", "is this over-engineered?", "설계해줘", "아키텍처 잡아줘", "설계 범위 정해줘", "기획 문서 써야 할까?". This skill must be explicitly invoked — do NOT trigger automatically before plan mode or implementation. Guides design scope to produce exactly the right amount of specification, preventing over-specification that kills vibe coding productivity.
 ---
 
 # Vibe Design
@@ -20,47 +20,56 @@ Over-specification is as harmful as under-specification. Pseudocode in design do
 - 해당 영역에 기존 설계 문서가 있으면 → 새 파일을 만들지 말고 기존 문서를 업데이트. 새 파일 생성이 필요한지 유저에게 확인할 것.
 - **전달받은 문서 외 다른 문서를 참조해서 스코프를 판단하지 말 것.** 다른 문서 참조가 필요하면 유저에게 물어볼 것.
 
-## Step 1: Determine Scope Level
+## Step 1: Scope Check
 
-Before any design work, classify the requirement:
+이 요구사항이 설계 문서가 필요한 수준인지 판단한다.
 
-### Level 0: No Design Needed
+**설계 불필요 (바로 구현):**
+- 기존 코드 구조 안에서 완결되는 작업 (버그 수정, 설정 변경, 패턴 확장)
+- 새로운 구조적 결정이 없는 경우
 
-**Condition**: Requirement completes within existing code structure.
+**설계 필요 (이 스킬 계속 진행):**
+- 새로운 구조적 결정이 필요하고, 이후 기능이 이 결정에 의존하는 경우
+- 새 프로젝트, 새 서브시스템, 아키텍처 변경 등
 
-- Bug fixes, text changes, style adjustments, config tweaks
-- No new architectural decisions required
+설계 불필요로 판단되면 사용자에게 알리고 스킬을 종료한다.
 
-**Action**: Implement directly. No design document, no design discussion.
+## Step 1.5: User Dialogue
 
-### Level 1: Inline Design
+설계 문서를 작성하기 전에 사용자와 대화를 통해 핵심 결정을 구체화한다.
 
-**Condition**: New feature that extends existing architecture through established patterns.
+### 왜 필요한가
 
-- Adding a component, endpoint, or handler where the pattern already exists
-- Extension points are already in place
+설계 문서의 결정은 두 종류다:
+- **AI가 판단해도 되는 결정** (라이브러리 선택, 파일 구조, 내부 구현)
+- **사용자만 답할 수 있는 결정** (UX 흐름, 비즈니스 규칙, 우선순위, 톤)
 
-**Action**: State constraints directly in the implementation prompt. No separate document.
+후자를 AI가 추측하면 구현이 불안정해진다. 대화로 확정해야 한다.
 
-Format:
-```
-"[Feature description].
-- [Key decision 1]
-- [Key decision 2]
-- Constraint: [what must/must not happen]"
-```
+### 대화 규칙
 
-### Level 2: Document Design
+- **1문 1답**: 한 메시지에 질문 하나만. 여러 질문을 한꺼번에 던지지 말 것.
+- **선택지 우선**: 가능하면 2-4개 선택지를 제시. 열린 질문보다 선택이 빠르다.
+- **접근 방식 제안**: 핵심 구조 결정 시 2-3개 접근 방식을 트레이드오프와 함께 제시하고 선택받을 것.
+- **사용자 응답이 선택지 밖이면 따를 것**: 사용자가 선택지 외 답변을 하면 그것이 결정이다.
 
-**Condition**: New structural decisions needed that downstream features will depend on.
+### 무엇을 물어볼 것인가
 
-- New project initialization
-- New subsystem (authentication, real-time sync, etc.)
-- Decisions that change how future features get built
+프로젝트 도메인에 따라 다르다. 핵심 기준: **"이 결정을 AI가 추측했을 때, 사용자가 '아닌데?'라고 할 가능성이 있는가?"** 가능성이 있으면 물어볼 것.
 
-**Action**: Write a design document.
+예시 (도메인별):
+- 프론트엔드: 화면 구성, 네비게이션 흐름, 인터랙션 패턴, 디자인 톤
+- 백엔드: 데이터 모델 경계, 외부 서비스 연동 방식, 인증 전략
+- CLI: 명령 구조, 출력 형식, 에러 처리 수준
+- 에이전트: 역할 분담, 자율성 수준, 사람 개입 지점
 
-## Step 2: Decision Maturity (Level 2 Only)
+### 대화 종료 기준
+
+다음 조건을 모두 만족하면 대화를 종료하고 다음 단계로:
+- Domain checklist(Step 3)의 v0 항목에 해당하는 결정이 모두 확정됨
+- 사용자가 "아닌데?"라고 할 만한 추측이 남아있지 않음
+
+## Step 2: Decision Maturity
 
 문서 안의 모든 결정을 **확정**과 **후보**로 구분할 것.
 
@@ -88,7 +97,7 @@ Format:
 
 **금지**: 후보 항목에 "because" 근거를 달지 말 것. 근거를 달면 확정된 결정처럼 보인다.
 
-## Step 3: Domain Decision Checklist (Level 2 Only)
+## Step 3: Domain Decision Checklist
 
 Before writing the design document, load the relevant domain checklist to ensure no critical decisions are missed. The checklist asks "have you decided about X?" — it does NOT prescribe what to decide.
 
@@ -103,7 +112,7 @@ If no domain checklist exists for the project type, identify decision categories
 
 ## Step 4: Apply the 5 Principles
 
-When writing a Level 2 design document, follow these principles strictly. Read `references/principles.md` before writing a Level 2 design document for the first time.
+설계 문서 작성 시 아래 원칙을 엄격히 따를 것. 처음 설계 문서를 작성하기 전에 `references/principles.md`를 읽을 것.
 
 1. **Decisions Only** — Record what was decided and why. Not implementation.
 2. **Why, Not How** — AI generates implementation from decisions. Specifying "how" creates constraints and cascading consistency issues.
@@ -164,6 +173,21 @@ Decisions deferred to future milestones.
 
 These are implementation decisions. AI makes them during coding, guided by the architectural decisions and constraints above.
 
+### 도메인별 결정 섹션
+
+위 기본 템플릿(Goal, Tech Stack, Architectural Decisions, Constraints, Scope) 외에, Step 1.5 대화에서 나온 도메인 특화 결정을 별도 섹션으로 추가한다.
+
+**섹션 이름과 내용은 도메인에 맞게 유연하게 결정한다.** 예시:
+
+- 프론트엔드 → `## Screens`: 화면별 핵심 구성 요소와 인터랙션 결정
+- 백엔드 API → `## Endpoints`: 핵심 엔드포인트와 데이터 흐름 결정
+- CLI → `## Commands`: 명령 구조와 입출력 형태 결정
+- 에이전트 → `## Agent Roles`: 에이전트별 역할과 도구 경계 결정
+
+**작성 기준**: "이 내용이 없으면 AI가 잘못 구현할 가능성이 높은가?" Yes면 포함. No면 AI 판단에 맡긴다.
+
+**금지**: 이 섹션에서도 구현 디테일(컴포넌트 트리, 라우트 테이블, API 시그니처)은 기본적으로 적지 않는다. 결정과 핵심 요소만 기술한다 — 단, 사용자가 대화에서 명시적으로 결정한 것이 그 수준이라면 포함한다.
+
 ## Step 6: Validate
 
 Before moving to implementation, check:
@@ -208,18 +232,18 @@ CLAUDE.md는 작업 지침서이지 설계 문서가 아니다. 설계 내용(�
 ```
 Requirement received
   → 대상 문서 확인 (유저 미지정 시 재질문)
-  → Changes within existing code? → Level 0: Implement directly
-  → Extends existing architecture? → Level 1: Constraints in prompt
-  → New structural decisions? → Level 2:
-      1. 확정/후보 구분 (Decision Maturity)
-      2. Load domain checklist → identify decisions needed
-      3. Apply 5 principles
-      3.5. 복수 문서 시 결정-문서 매핑 (누락 방지)
-      4. Write design document
-      5. Validate: fits in context, decisions-only, maturity separated
-      6. Get user approval
-      7. Reflect into CLAUDE.md (링크 + 규칙만)
-      8. Proceed to implementation
+  → Scope Check: 설계 불필요 → 스킬 종료, 바로 구현
+  → 설계 필요 →
+      1. 사용자 대화로 핵심 결정 구체화 (Step 1.5)
+      2. 확정/후보 구분 (Decision Maturity)
+      3. Load domain checklist → identify decisions needed
+      4. Apply 5 principles
+      4.5. 복수 문서 시 결정-문서 매핑 (누락 방지)
+      5. Write design document (기본 템플릿 + 도메인별 결정 섹션)
+      6. Validate: fits in context, decisions-only, maturity separated
+      7. Get user approval
+      8. Reflect into CLAUDE.md (링크 + 규칙만)
+      9. Proceed to implementation
 ```
 
 ## Common Mistakes
@@ -234,6 +258,8 @@ Before proceeding to implementation, review the checklist below. If the design h
 - 유저가 지정하지 않은 다른 문서를 참조해서 스코프를 판단하기
 - CLAUDE.md에 설계 내용(아키텍처, 상태 머신)을 복제하기
 - 복수 문서 업데이트 시 결정-문서 매핑 없이 바로 작성하여 스코프에 해당하는 결정을 누락하기
+- 사용자 대화(Step 1.5) 없이 AI가 도메인 결정을 추측해서 문서에 적기
+- 사용자가 대화에서 명시적으로 결정한 것을 "구현 디테일"이라며 문서에서 제외하기
 
 ## Additional Resources
 

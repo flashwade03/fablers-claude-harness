@@ -40,9 +40,15 @@ function validateTransition(from, to) {
 The state machine decision (what states exist, what transitions are valid) is design.
 The validation function is implementation. AI writes this from the decision.
 
+### 예외: 사용자가 대화에서 명시적으로 확정한 결정
+
+사용자가 Step 1.5 대화에서 구현 수준의 선택을 명시적으로 결정한 경우, 그것은 설계 결정으로 취급한다. 예: 사용자가 "WebSocket을 써라"가 아니라 대화에서 실시간 통신 방식을 물었을 때 "WebSocket"을 선택한 경우 — 이것은 사용자의 결정이므로 기록한다.
+
+AI가 추측한 구현 디테일은 여전히 금지. 사용자가 결정한 것만 예외.
+
 ### Test
 
-For every line in the design document, ask: "Is this a decision, or is this telling the AI how to write code?" If the latter, delete it.
+For every line in the design document, ask: "Is this a decision, or is this telling the AI how to write code?" If the latter — and it was NOT explicitly decided by the user in dialogue — delete it.
 
 ---
 
@@ -75,6 +81,12 @@ The "why" enables AI to make correct implementation decisions in cases the desig
 ```
 
 These specify the exact implementation mechanism. An AI reading the "why" (dynamic port allocation for concurrent projects) would arrive at an equivalent or better implementation on its own.
+
+### 예외: 사용자가 대화에서 명시적으로 확정한 결정
+
+Principle 1과 동일한 예외가 적용된다. 사용자가 Step 1.5 대화에서 특정 기술/방식을 선택한 경우, 그것은 "how"가 아니라 사용자의 결정이다. 예: 사용자가 "HTTP polling vs WebSocket?" 질문에 "WebSocket"을 선택 → "WebSocket for client-server communication — because 사용자 결정: 실시간 스트리밍 필요"로 기록.
+
+AI가 자체적으로 기술 선택을 확정하여 적는 것은 여전히 금지.
 
 ### The Cascading Consistency Problem
 

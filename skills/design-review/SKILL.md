@@ -35,6 +35,8 @@ Evaluate the document against 6 axes. Each axis gets one of three grades:
 
 Detection: scan for code blocks, function names with parentheses, type annotations, variable names, specific library API calls.
 
+**예외**: 사용자가 대화(Step 1.5)에서 명시적으로 확정한 기술/방식 선택은 구현 디테일이 아니라 설계 결정이다. 예: "WebSocket — because 사용자 결정"은 PASS. 판단이 어려우면 해당 항목이 사용자 결정인지 확인할 것.
+
 ### Axis 2: Rationale Presence
 
 > Does each decision explain WHY?
@@ -74,6 +76,8 @@ Detection: count substantive lines only (exclude template headers, blank lines, 
 **FAIL**: Multiple constraints that dictate implementation choices.
 
 Detection: look for specific library names, framework APIs, or file path patterns stated as constraints. Boundary = "실시간 통신이 필요하다". Prescription = "WebSocket을 사용하여 Express에서...".
+
+**예외**: 사용자가 대화에서 특정 기술을 선택한 경우, 그 기술명이 제약 조건에 포함되는 것은 처방이 아니라 결정이다. 예: "WebSocket 사용 — because 사용자 결정: 실시간 필요"는 PASS.
 
 ### Axis 6: CLAUDE.md Alignment
 
@@ -168,7 +172,7 @@ For a complete example of review output, see `examples/sample-review.md`.
 ## Edge Cases
 
 - **대상 문서 미지정**: 유저에게 재질문. 자동 탐색하지 말 것.
-- **Level 0/1 requirement with a Level 2 document**: FAIL on Decision Maturity — the requirement didn't need a document.
+- **설계 불필요한 요구사항에 설계 문서가 존재**: Scope Check에서 걸러졌어야 할 단순 작업에 대해 설계 문서가 작성됨 — 과잉 설계 경고.
 - **Design is intentionally detailed for a complex domain**: Complexity justifies more DECISIONS, not more IMPLEMENTATION details. Principles still apply.
 - **3+ review rounds already**: The document likely contains too much implementation detail. Read `references/review-cycle-warning.md` and flag this in the assessment.
 
