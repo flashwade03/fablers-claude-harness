@@ -39,13 +39,13 @@ Detection: scan for code blocks, function names with parentheses, type annotatio
 
 ### Axis 2: Rationale Presence
 
-> Does each decision explain WHY?
+> Does each decision explain WHY? Are flow-based decisions visualized?
 
-**PASS**: Every decision has a reason ("because...", "to ensure...", "so that...") or the reason is self-evident from context.
-**WARN**: 1-2 decisions missing rationale.
+**PASS**: Every decision has a reason ("because...", "to ensure...", "so that...") or the reason is self-evident from context. 흐름이 있는 결정(주체 간 요청/응답, 상태 전이, 데이터 처리 과정)이 다이어그램으로 시각화되어 있음.
+**WARN**: 1-2 decisions missing rationale. 또는 흐름이 있는 결정이 텍스트로만 기술되어 있고 다이어그램이 없음.
 **FAIL**: Multiple decisions stated as bare facts without reasoning.
 
-Detection: look for bare bullet points stating decisions without "because", "to ensure", "so that", or contextual justification.
+Detection: look for bare bullet points stating decisions without "because", "to ensure", "so that", or contextual justification. 또한 다음 패턴이 텍스트로만 기술되어 있는지 확인: 여러 주체 간 위임/호출 흐름, 상태 전이(Job 상태, 세션 라이프사이클), 다단계 데이터 처리 과정. 해당 패턴이 있는데 Mermaid 등 다이어그램이 없으면 WARN.
 
 ### Axis 3: Decision Maturity
 

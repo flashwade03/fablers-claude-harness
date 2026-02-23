@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "S-grade design methodology — vibe coding design creation and 6-axis review scoring",
-    "version": "0.2.5"
+    "version": "0.2.6"
   },
   "plugins": [
     {
       "name": "design-sensei",
       "source": "./",
       "description": "S-grade design methodology — vibe coding design creation and 6-axis review scoring",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "author": {
         "name": "flashwade03"
       },
