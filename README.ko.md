@@ -110,10 +110,16 @@ Grade: A | Score: 83
 ## 빠른 시작
 
 ```bash
-# 마켓플레이스에서 설치
-claude plugin add flashwade03/fablers-claude-harness
+# 마켓플레이스 등록
+/plugin marketplace add flashwade03/fablers-claude-harness
 
-# 또는 로컬 실행
+# 플러그인 설치
+/plugin install fablers-claude-harness@fablers-claude-harness
+```
+
+로컬 개발 시:
+
+```bash
 claude --plugin-dir /path/to/fablers-claude-harness
 ```
 

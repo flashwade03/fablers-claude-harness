@@ -110,10 +110,16 @@ Grade: A | Score: 83
 ## クイックスタート
 
 ```bash
-# マーケットプレイスからインストール
-claude plugin add flashwade03/fablers-claude-harness
+# マーケットプレイスを登録
+/plugin marketplace add flashwade03/fablers-claude-harness
 
-# またはローカルで実行
+# プラグインをインストール
+/plugin install fablers-claude-harness@fablers-claude-harness
+```
+
+ローカル開発の場合：
+
+```bash
 claude --plugin-dir /path/to/fablers-claude-harness
 ```
 

@@ -110,10 +110,16 @@ Low-complexity patterns get redirected to CLAUDE.md rules instead of full skills
 ## Quick Start
 
 ```bash
-# Install from marketplace
-claude plugin add flashwade03/fablers-claude-harness
+# Add the marketplace
+/plugin marketplace add flashwade03/fablers-claude-harness
 
-# Or run locally
+# Install the plugin
+/plugin install fablers-claude-harness@fablers-claude-harness
+```
+
+For local development:
+
+```bash
 claude --plugin-dir /path/to/fablers-claude-harness
 ```
 
