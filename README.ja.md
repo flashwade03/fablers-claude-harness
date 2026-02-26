@@ -111,7 +111,7 @@ Grade: A | Score: 83
 
 ```bash
 # マーケットプレイスを登録
-/plugin marketplace add flashwade03/fablers-claude-harness
+/plugin marketplace add flashwade03/fablers-claude-plugins
 
 # プラグインをインストール
 /plugin install fablers-claude-harness@fablers

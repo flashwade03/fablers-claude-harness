@@ -111,7 +111,7 @@ Grade: A | Score: 83
 
 ```bash
 # 마켓플레이스 등록
-/plugin marketplace add flashwade03/fablers-claude-harness
+/plugin marketplace add flashwade03/fablers-claude-plugins
 
 # 플러그인 설치
 /plugin install fablers-claude-harness@fablers
