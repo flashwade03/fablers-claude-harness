@@ -1,83 +1,160 @@
+<div align="center">
+
 # fablers-claude-harness
 
-Personal harness set for Claude Code — design methodology, review scoring, and session skill extraction.
+**Stop prompting. Start harnessing.**
 
-**Languages**: [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
+A Claude Code plugin that encodes battle-tested design methodologies into reusable skills.
+No more ad-hoc prompting — just structured workflows that actually work.
 
-## What is this?
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet?style=for-the-badge)](https://claude.ai)
+[![Version](https://img.shields.io/badge/version-0.2.6-blue?style=for-the-badge)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-A Claude Code plugin that provides structured workflows for software design and skill management. Instead of relying on ad-hoc prompting, this plugin encodes proven methodologies as reusable skills.
+[English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
+
+</div>
+
+---
+
+## Why?
+
+AI-assisted coding is powerful, but without structure it's chaos. You end up with:
+- Over-specified designs that kill productivity
+- Under-specified designs that produce garbage
+- The same workflows reinvented every session
+
+**fablers-claude-harness** solves this by packaging proven methodologies as skills that Claude loads on demand.
+
+---
 
 ## Skills
 
-### vibe-design
+### `vibe-design` — Design just enough, never too much
 
-Guides the design process to produce exactly the right amount of specification for vibe coding. Prevents both over-specification and under-specification.
+> *"Design = Decisions + Constraints + Milestones. Never pseudocode."*
 
-- Scope check: determines if a design document is even needed
-- User dialogue: clarifies key decisions through structured conversation
-- Decision maturity: separates confirmed decisions from candidates
-- Domain checklists: ensures no critical decisions are missed
+Guides you to produce exactly the right amount of specification for vibe coding. No more 8,000-word design docs that nobody reads.
 
-**Trigger**: "design a feature", "create architecture", "설계해줘", "아키텍처 잡아줘"
+| Step | What happens |
+|------|-------------|
+| Scope Check | Is a design doc even needed? If not, skip and build. |
+| User Dialogue | One question at a time. Choices over open-ended questions. |
+| Decision Maturity | Confirmed decisions get rationale. Candidates stay as bullets. |
+| Domain Checklist | No critical decisions fall through the cracks. |
+| Write & Validate | Output fits ~200-300 lines. Every line is a decision, not implementation. |
 
-### design-review
-
-Scores design documents against 6 vibe coding axes and outputs Grade (S~F), Score (0-100), and actionable feedback.
-
-| Axis | What it checks |
-|------|---------------|
-| Decision Purity | Decisions only, no implementation details |
-| Rationale Presence | Every decision has a "why" |
-| Decision Maturity | Confirmed vs candidate items separated |
-| Context Budget | Fits in ~200-300 lines |
-| Constraint Quality | Boundaries, not prescriptions |
-| CLAUDE.md Alignment | Proper linking, no content duplication |
-
-**Trigger**: "review my design", "score this design", "설계 리뷰해줘"
-
-### session-skill-extractor
-
-Analyzes the current session conversation to identify repeatable workflows, domain knowledge, or multi-step procedures worth turning into reusable skills.
-
-- Scans conversation for 6 signal categories (repeated workflows, decision frameworks, quality gates, etc.)
-- Scores candidates by reusability, complexity, and distinctness
-- Presents proposals for user approval before creating
-- Includes a transformation guide for converting raw conversation into structured skills
-
-**Trigger**: "extract skill from conversation", "대화에서 스킬 추출해줘", "이 세션에서 스킬 만들 게 있어?"
-
-## Installation
-
-```bash
-claude plugin add flashwade03/fablers-claude-harness
+```
+> 설계해줘
+> design a feature
+> 아키텍처 잡아줘
 ```
 
-Or for local development:
+---
+
+### `design-review` — 6-axis scoring, S to F grade
+
+> *"If it has pseudocode, it's not a design document."*
+
+Scores any design document against 6 axes derived from real over-specification failures. Outputs a grade, a score, and exactly what to fix.
+
+```
+Grade: A | Score: 83
+
+┌─────────────────────┬───────┬────────┐
+│ Axis                │ Grade │ Points │
+├─────────────────────┼───────┼────────┤
+│ Decision Purity     │ PASS  │   2    │
+│ Rationale Presence  │ PASS  │   2    │
+│ Decision Maturity   │ WARN  │   1    │
+│ Context Budget      │ PASS  │   2    │
+│ Constraint Quality  │ PASS  │   2    │
+│ CLAUDE.md Alignment │ WARN  │   1    │
+└─────────────────────┴───────┴────────┘
+```
+
+Any single **FAIL** caps the grade at C. No shipping designs with fundamental issues.
+
+```
+> 설계 리뷰해줘
+> review my design
+> score this design
+```
+
+---
+
+### `session-skill-extractor` — Turn conversations into skills
+
+> *"Your best workflows shouldn't die when the session ends."*
+
+Analyzes your current conversation to find patterns worth preserving. If it finds something, it builds the skill for you.
+
+**How it works:**
+
+1. Scans the entire conversation for 6 signal types
+2. Scores candidates by reusability, complexity, and distinctness
+3. Presents proposals — you pick what to create
+4. Builds the skill with proper structure, trigger phrases, and references
+5. Verifies the output before finishing
+
+Low-complexity patterns get redirected to CLAUDE.md rules instead of full skills. No skill bloat.
+
+```
+> 대화에서 스킬 추출해줘
+> extract skill from conversation
+> 이 세션에서 스킬 만들 게 있어?
+```
+
+---
+
+## Quick Start
 
 ```bash
+# Install from marketplace
+claude plugin add flashwade03/fablers-claude-harness
+
+# Or run locally
 claude --plugin-dir /path/to/fablers-claude-harness
 ```
+
+---
 
 ## Project Structure
 
 ```
 fablers-claude-harness/
 ├── .claude-plugin/
-│   ├── plugin.json
-│   └── marketplace.json
+│   ├── plugin.json              # Plugin manifest
+│   └── marketplace.json         # Marketplace metadata
 └── skills/
-    ├── vibe-design/
+    ├── vibe-design/             # Design methodology
     │   ├── SKILL.md
     │   └── references/
-    ├── design-review/
+    │       ├── principles.md
+    │       ├── anti-patterns.md
+    │       └── domain-web-service.md
+    ├── design-review/           # 6-axis review scoring
     │   ├── SKILL.md
     │   ├── references/
     │   └── examples/
-    └── session-skill-extractor/
+    └── session-skill-extractor/ # Conversation → Skill
         ├── SKILL.md
         └── references/
+            ├── analysis-criteria.md
+            └── transformation-guide.md
 ```
+
+---
+
+## Philosophy
+
+This plugin follows three principles:
+
+1. **Decisions, not implementation** — Design documents record *what* and *why*, never *how*
+2. **Progressive disclosure** — Core workflow loads first, details load only when needed
+3. **Earn your complexity** — Simple patterns stay simple. Skills are created only when the pattern is complex enough to justify one
+
+---
 
 ## License
 
