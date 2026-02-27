@@ -1,7 +1,7 @@
 {
   "name": "fablers-claude-harness",
   "description": "Personal harness set — design methodology, review scoring, and session skill extraction",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "author": {
     "name": "flashwade03"
   }

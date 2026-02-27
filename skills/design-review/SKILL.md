@@ -93,7 +93,7 @@ Detection: CLAUDE.md에 설계 문서 링크 테이블이 있는지 확인. 아�
 
 ## Step 2: Calculate Score and Grade
 
-**Score** = (sum of axis points / 12) × 100, rounded to integer.
+**Score** = (sum of axis points / max possible points) × 100, rounded to integer. Max possible points = 12 (6 axes × 2 points). If Axis 6 is skipped (draft document), max possible points = 10 (5 axes × 2 points).
 
 **Grade** is determined by FAIL count first, then score:
 

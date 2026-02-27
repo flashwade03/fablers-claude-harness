@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Personal harness set — design methodology, review scoring, and session skill extraction",
-    "version": "0.2.6"
+    "version": "0.3.0"
   },
   "plugins": [
     {
       "name": "fablers-claude-harness",
       "source": "./",
       "description": "Personal harness set — design methodology, review scoring, and session skill extraction",
-      "version": "0.2.6",
+      "version": "0.3.0",
       "author": {
         "name": "flashwade03"
       },

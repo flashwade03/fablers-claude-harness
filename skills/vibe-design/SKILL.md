@@ -150,7 +150,7 @@ If no domain checklist exists for the project type, identify decision categories
 
 ## Step 5: Write the Design Document
 
-기존 설계 문서가 있으면 해당 문서를 업데이트한다. 새 영역이면 프로젝트의 설계 문서 디렉토리에 새 파일을 생성한다. 저장 경로는 프로젝트의 기존 구조를 따를 것 (예: `docs/features/`, `docs/design/` 등). 유저에게 확인 후 진행.
+기존 설계 문서가 있으면 해당 문서를 업데이트한다. 새 영역이면 프로젝트의 설계 문서 디렉토리에 새 파일을 생성한다. 저장 경로는 프로젝트의 기존 구조를 따를 것 (예: `docs/features/`, `docs/design/` 등). 유저에게 확인 후 진행. For a complete example following these principles, see `examples/sample-design-output.md`.
 
 ```markdown
 # [Feature/Milestone Name]
