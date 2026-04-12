@@ -1,14 +1,14 @@
 <div align="center">
 
-# fablers-claude-harness
+# fablers
 
 **프롬프팅을 그만두고, 하네스를 장착하세요.**
 
-검증된 설계 방법론을 재사용 가능한 스킬로 인코딩한 Claude Code 플러그인.
-즉흥적인 프롬프팅 대신, 실제로 작동하는 구조화된 워크플로우.
+검증된 워크플로우를 재사용 가능한 플러그인으로 패키징한 Claude Code 마켓플레이스.
+설계 방법론, 문서 단조, 에이전틱 RAG — 한 곳에서.
 
-[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.4.1-blue?style=for-the-badge)](#)
+[![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -17,93 +17,49 @@
 
 ---
 
-## 왜 만들었나?
+## 플러그인
 
-AI 코딩은 강력하지만, 구조 없이 쓰면 혼돈입니다:
-- 과잉 설계 — 아무도 안 읽는 8,000줄짜리 설계 문서
-- 과소 설계 — 쓰레기가 나오는 구현
-- 매 세션마다 같은 워크플로우를 처음부터 다시 만듦
+### `vibe-architecture` — 설계 방법론 & 스킬 추출
 
-**fablers-claude-harness**는 검증된 방법론을 스킬로 패키징해서, Claude가 필요할 때 로드합니다.
+검증된 설계 방법론을 스킬로 인코딩해서 Claude가 필요할 때 로드합니다. 즉흥적 프롬프팅 대신, 실제로 작동하는 구조화된 워크플로우.
 
----
-
-## 스킬
-
-### `vibe-design` — 아이디어부터 딱 필요한 만큼의 설계까지
-
-> *"설계 = 결정 + 제약 + 마일스톤. 절대 의사코드 아님."*
-
-러프한 아이디어 탐색부터 구조화된 설계 문서까지 전 과정을 커버합니다. `/sketch`로 시작.
-
-| 단계 | 하는 일 |
+| 스킬 | 하는 일 |
 |------|--------|
-| 컨텍스트 탐색 | 질문 전에 프로젝트 상태 먼저 파악. |
-| 스코프 체크 | 설계 문서가 필요한가? 불필요하면 바로 구현. |
-| 아이디어 탐색 | 질문 하나씩. 2-3개 접근 방식을 트레이드오프와 함께 제안. |
-| 결정 성숙도 | 확정 결정에만 근거. 후보는 불릿 리스트만. |
-| 도메인 체크리스트 | 빠진 결정 없이 꼼꼼하게. |
-| 작성 & 검증 | ~200-300줄. 모든 줄이 결정이지, 구현이 아님. |
+| **vibe-design** | 러프한 아이디어를 딱 필요한 만큼의 설계로. 결정 + 제약 + 마일스톤, 절대 의사코드 아님. |
+| **design-review** | 6축 평가로 설계 문서 점수 매기기 (S~F 등급, 0-100점). FAIL 1개면 등급 C 제한. |
+| **session-skill-extractor** | 대화를 분석해서 재사용 가능한 패턴 추출. 스킬, CLAUDE.md, hookify, memory로 라우팅. |
 
 ```
-> /sketch
-> 설계해줘
-> 아이디어 좀 정리하자
+> /sketch                          # 설계 시작
+> 설계 리뷰해줘                      # 설계 리뷰
+> 대화에서 스킬 추출해줘              # 세션에서 스킬 추출
 ```
 
 ---
 
-### `design-review` — 6축 평가, S~F 등급
+### `damascus` — 반복적 멀티-LLM 리뷰로 문서 단조
 
-> *"의사코드가 있으면 설계 문서가 아니다."*
+> *다마스커스 강철처럼, 문서는 반복된 단조를 통해 강해진다.*
 
-실제 과잉 설계 실패 사례에서 도출한 6개 축으로 설계 문서를 평가합니다. 등급, 점수, 구체적 수정 방법을 출력.
-
-```
-Grade: A | Score: 83
-
-┌─────────────────────┬───────┬────────┐
-│ Axis                │ Grade │ Points │
-├─────────────────────┼───────┼────────┤
-│ Decision Purity     │ PASS  │   2    │
-│ Rationale Presence  │ PASS  │   2    │
-│ Decision Maturity   │ WARN  │   1    │
-│ Context Budget      │ PASS  │   2    │
-│ Constraint Quality  │ PASS  │   2    │
-│ CLAUDE.md Alignment │ WARN  │   1    │
-└─────────────────────┴───────┴────────┘
-```
-
-**FAIL**이 하나라도 있으면 등급이 C로 제한. 근본적인 문제가 있는 설계는 통과 불가.
+여러 LLM을 활용한 반복 리뷰 루프로 문서를 정제합니다. 구현 계획이나 기술 문서를 작성하고, Claude, Gemini, OpenAI가 병렬로 리뷰한 뒤 승인될 때까지 반복.
 
 ```
-> 설계 리뷰해줘
-> 이 설계 괜찮아?
-> review my design
+> /forge <작업 설명>                # 단일 리뷰어 단조
+> /forge-team <작업 설명>           # 멀티-LLM 팀 리뷰
+> /forge-plan <작업 설명>           # 계획만
+> /forge-doc <작업 설명>            # 문서만
 ```
 
 ---
 
-### `session-skill-extractor` — 대화를 스킬로 변환
+### `fablers-agentic-rag` — 문서에 질문하세요. 인용된 답변을 받으세요.
 
-> *"최고의 워크플로우가 세션과 함께 사라져선 안 된다."*
-
-현재 대화를 분석해서 보존할 가치가 있는 패턴을 찾고, 승인하면 스킬로 만들어줍니다.
-
-**작동 방식:**
-
-1. 전체 대화를 6가지 신호 유형으로 스캔
-2. 재사용성, 복잡도, 고유성으로 후보 점수 매기기
-3. 제안 제시 — 사용자가 선택
-4. 적절한 구조, 트리거 문구, 참조 파일과 함께 스킬 생성
-5. 완료 전 구조 검증
-
-복잡도가 낮은 패턴은 스킬 대신 CLAUDE.md 규칙으로 리다이렉트. 스킬 비대화 방지.
+에이전틱 RAG 파이프라인 — 쿼리 분석, 하이브리드 검색 (벡터 + BM25), CRAG 검증, 인용 답변 합성 — 모두 Claude 에이전트가 오케스트레이션. PDF, 텍스트, 마크다운 지원.
 
 ```
-> 대화에서 스킬 추출해줘
-> 이 세션에서 스킬 만들 게 있어?
-> extract skill from conversation
+> /ingest <파일>                   # 문서 인덱싱
+> /ask <질문>                      # 인용 포함 질의
+> /search <쿼리>                   # 원시 검색
 ```
 
 ---
@@ -114,14 +70,10 @@ Grade: A | Score: 83
 # 마켓플레이스 등록
 /plugin marketplace add flashwade03/fablers-claude-plugins
 
-# 플러그인 설치
-/plugin install fablers-claude-harness@fablers
-```
-
-로컬 개발 시:
-
-```bash
-claude --plugin-dir /path/to/fablers-claude-harness
+# 개별 플러그인 설치
+/plugin install vibe-architecture@fablers
+/plugin install damascus@fablers
+/plugin install fablers-agentic-rag@fablers
 ```
 
 ---
@@ -129,35 +81,36 @@ claude --plugin-dir /path/to/fablers-claude-harness
 ## 프로젝트 구조
 
 ```
-fablers-claude-harness/
+fablers/
 ├── .claude-plugin/
-│   ├── plugin.json              # 플러그인 매니페스트
-│   └── marketplace.json         # 마켓플레이스 메타데이터
-├── commands/
-│   └── sketch.md                # /sketch 커맨드
-└── skills/
-    ├── vibe-design/             # 설계 방법론
-    │   ├── SKILL.md
-    │   └── references/
-    │       ├── principles.md
-    │       ├── anti-patterns.md
-    │       └── domain-web-service.md
-    ├── design-review/           # 6축 리뷰 스코어링
-    │   ├── SKILL.md
-    │   ├── references/
-    │   └── examples/
-    └── session-skill-extractor/ # 대화 → 스킬 변환
-        ├── SKILL.md
-        └── references/
-            ├── analysis-criteria.md
-            └── transformation-guide.md
+│   └── marketplace.json
+├── plugins/
+│   ├── vibe-architecture/         # 설계 방법론
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   └── skills/
+│   │       ├── vibe-design/
+│   │       ├── design-review/
+│   │       └── session-skill-extractor/
+│   ├── damascus/                       # 문서 단조
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   ├── hooks/
+│   │   ├── scripts/
+│   │   └── skills/
+│   └── fablers-agentic-rag/            # 에이전틱 RAG
+│       ├── .claude-plugin/plugin.json
+│       ├── agents/
+│       ├── commands/
+│       ├── hooks/
+│       ├── scripts/
+│       └── skills/
 ```
 
 ---
 
 ## 철학
-
-이 플러그인은 세 가지 원칙을 따릅니다:
 
 1. **결정이지, 구현이 아니다** — 설계 문서는 *무엇*과 *왜*를 기록한다. *어떻게*는 절대 아님
 2. **점진적 공개** — 핵심 워크플로우가 먼저 로드되고, 상세 내용은 필요할 때만

@@ -1,0 +1,252 @@
+<p align="center">
+  <strong>Damascus</strong><br>
+  <em>マルチLLMレビューの反復によりドキュメントを鍛造する</em>
+</p>
+
+<p align="center">
+  <a href="#インストール">インストール</a> &middot;
+  <a href="#使い方">使い方</a> &middot;
+  <a href="#設定">設定</a> &middot;
+  <a href="./README.md">English</a> &middot;
+  <a href="./README.ko.md">한국어</a>
+</p>
+
+---
+
+> ダマスカス鋼のように、ドキュメントは繰り返しの鍛造で強くなる。
+
+Damascusは、複数のLLMによる反復レビューループでドキュメントを精錬する**Claude Codeプラグイン**です。実装計画や技術文書を作成し、Claude・Gemini・OpenAIが並列でレビューした後、承認されるまで改善を続けます。
+
+```
+/forge [-n max] [-o path] <タスクの説明>
+/forge-team [-n max] [-o path] <タスクの説明>
+```
+
+## なぜ作ったのか
+
+Claudeのplanモードの結果が納得いかなければ、最初からやり直します。新しいコンテキスト、新しい探索、新しい試行——前回の試みから学んだことはすべて消えます。3回繰り返せばplanモードを3回フルで回したことになりますが、結果は過去の失敗から何も学んでいません。
+
+6が出るまでサイコロを振り続けるのと同じです。
+
+Damascusは異なるアプローチを取ります：**フィードバックが蓄積され、コンテキストが保持され、各イテレーションが前回の上に積み重なります。** 1回目の弱点が2回目の入力になります。レビュアーが著者の見落としを指摘し、著者が同じ文脈の中でそれを改善します。
+
+結果はランダムではありません。収束します。
+
+### 間違えた時のコスト
+
+開発は設計の3〜5倍のコストがかかります。Damascusなしでは、毎回そのコストを支払うことになります。
+
+```
+Damascusなし — うまくいくまで再実行
+
+  試行 1:  設計 [====]  →  開発 [================]  →  ✗ 欠陥あり
+  試行 2:  設計 [====]  →  開発 [================]  →  ✗ まだ不十分
+  試行 3:  設計 [====]  →  開発 [================]  →  ✓ 許容範囲
+
+  総トークン:  ~300K（設計）+ ~900K（開発）= ~1.2M
+  前回のコンテキスト:  0% — 毎回ゼロから開始
+```
+
+```
+Damascus — コストの安い側で反復し、開発は1回だけ
+
+  反復 1:  草案 [====]  →  レビュー [==]  →  改善
+  反復 2:  改善 [==]    →  レビュー [==]  →  改善
+  反復 3:  改善 [==]    →  レビュー [==]  →  ✓ 承認
+  開発:    開発 [================]    →  ✓ 完了
+
+  総トークン:  ~340K（設計 + レビュー）+ ~300K（開発）= ~640K
+  前回のコンテキスト:  100% — 各イテレーションが前回の上に積み重なる
+```
+
+> **失敗した開発3回で~1.2Mトークン、または精錬された設計3回+クリーンな開発1回で~640Kトークン。** 反復はコストの安い側で行われます。
+
+トークンが少ないことは単に安いだけではありません——コンテキストウィンドウ内の情報密度が高いことを意味します。再実行は同じコードベースをゼロから再探索するためにトークンを消費します。Damascusはすでに分かっていることを精錬するフィードバックにトークンを使います。
+
+## 仕組み
+
+### `/forge` — 逐次実行（v3）
+
+```
+          ┌─────────────┐
+          │   Author    │  ドキュメント草案の作成
+          └──────┬──────┘
+                 │
+          ┌──────▼──────┐
+          │    Save     │  ファイルに保存
+          └──────┬──────┘
+                 │
+     ┌───────────┼───────────┐
+     ▼           ▼           ▼
+  Claude      Gemini      OpenAI     並列レビュー
+     └───────────┼───────────┘
+                 ▼
+          ┌─────────────┐
+          │    Judge     │──── 承認 ──▶ 完了
+          └──────┬──────┘
+                 │ 要修正
+                 └──▶ Authorに戻る（最大N回）
+```
+
+各イテレーションで全レビュアーのフィードバックを取り込み、ダマスカス鋼の層のようにドキュメントを強化します。著者エージェントはイテレーション間で**resume**されます——読んだファイル、発見したパターンをすべて記憶し、ゼロから再探索する代わりに精密に修正します。
+
+### `/forge-team` — Agent Teams（v4）
+
+```
+  Lead ──▶ Planner ──▶ Explorers（並列コードベース調査）
+                 ◄──── findings
+           Planner ──▶ Lead（ExitPlanModeで計画を提出）
+  Lead ──▶ Scribe（整形・ファイル書き込み）
+  Lead ──▶ Reviewers（並列：Claude + Gemini + OpenAI）
+                 ◄──── reviews
+  Lead: 判定 ── 承認 ──▶ 終了
+                 │ 要修正
+                 └──▶ Planner（修正、最大Nラウンド）
+```
+
+Agent Teamsモードは、Claude Codeの[Agent Teams](https://docs.anthropic.com/en/docs/claude-code/agent-teams)を使用して、専門チームメイトを並列実行します。全チームメイトがラウンド間で生き続け、resumeなしで完全なコンテキストが保持されます。
+
+| 役割 | 数 | 担当 |
+|------|---|------|
+| **Lead** | 1 | ラウンド調整、判定決定 |
+| **Explorer** | 1–3 | コードベースの特定領域を調査、Plannerに報告 |
+| **Planner** | 1 | Explorerを管理、結果を統合、計画を作成 |
+| **Scribe** | 1 | ファイルを書き込む唯一のエージェント（ドキュメント＋レビュー） |
+| **Reviewer** | 1–3 | 独立レビュー（Claude、Gemini、OpenAI） |
+
+### v3 vs v4
+
+両モードともマルチLLMレビュー済みドキュメントを生成します。違いは深度です：
+
+| | `/forge`（v3） | `/forge-team`（v4） |
+|--|----------------|----------------------|
+| **計画** | 単一エージェントが探索＋計画 | 複数Explorerが専任Plannerに情報提供 |
+| **レビュー** | 並列だが独立 | 並列、チームメイトが生存 |
+| **コンテキスト** | ラウンド間でagent resume | チームメイトが停止しない — 完全なコンテキスト |
+| **適した用途** | 高速イテレーション、単純なタスク | 深い探索、複雑なコードベース |
+
+同一タスクでの品質比較は[docs/v4-comparison/](docs/v4-comparison/)を参照してください。
+
+## 設計思想
+
+- **技法より意図** — プロンプトエンジニアリングで迂回せず、Claudeネイティブのplanモードを信頼します。
+- **まず探索、書くのは後** — エージェントがコードベースを深く調査してから成果物を生成します。
+- **速度より品質** — よく鍛えられた一つのドキュメントは、実装ミスの繰り返しに勝ります。
+
+## インストール
+
+```bash
+# マーケットプレイスを追加してインストール
+/plugin marketplace add flashwade03/Damascus-For-Claude-Code
+/plugin install damascus@planner
+```
+
+初回セッション開始時に、Damascusがプロジェクトディレクトリに`.claude/damascus.local.md`を自動生成します。外部レビュアーを有効にするにはAPIキーを入力してください。
+
+## 使い方
+
+### コマンド
+
+| コマンド | モード | 説明 |
+|----------|--------|------|
+| `/forge` | 自動 | タスクに応じてplan / documentを自動判定 |
+| `/forge-plan` | Plan | 実装計画書（Claudeのplanモード使用） |
+| `/forge-doc` | Document | 技術文書 — API仕様、アーキテクチャ、設計ドキュメント |
+| `/forge-team` | 自動（Teams） | Agent Teamsモード — 並列Explorer、専任Planner |
+
+### 例
+
+```bash
+/forge implement user authentication
+/forge write API spec for the payment module
+
+/forge-plan -n 5 implement notification system
+/forge-doc -o docs/api/payment.md write API spec for payment
+```
+
+### オプション
+
+| フラグ | 説明 | デフォルト |
+|--------|------|------------|
+| `-n <max>` | 最大イテレーション回数 | `3` |
+| `-o <path>` | 出力ファイルパス | 自動検出 |
+
+`-o`を省略すると、プロジェクトのドキュメント規約を検出するか、ユーザーに確認します。
+
+## 設定
+
+`.claude/damascus.local.md`を編集（プロジェクトごとに自動生成）:
+
+```yaml
+---
+gemini_api_key: YOUR_GEMINI_KEY
+gemini_model: gemini-3-flash-preview
+enable_gemini_review: true
+
+openai_api_key: YOUR_OPENAI_KEY
+openai_model: gpt-5.1-codex-mini
+enable_openai_review: false
+
+enable_claude_review: true
+---
+```
+
+| オプション | 説明 | デフォルト |
+|------------|------|------------|
+| `gemini_api_key` | Gemini APIキー | — |
+| `gemini_model` | Geminiモデル | `gemini-3-flash-preview` |
+| `enable_gemini_review` | Geminiレビュアーを有効化 | `false` |
+| `openai_api_key` | OpenAI APIキー | — |
+| `openai_model` | OpenAIモデル | `gpt-5.1-codex-mini` |
+| `enable_openai_review` | OpenAIレビュアーを有効化 | `false` |
+| `enable_claude_review` | Claudeレビュアーを有効化 | `true` |
+
+## エージェント
+
+### 逐次モード（`/forge`）
+
+| エージェント | モデル | 役割 |
+|--------------|--------|------|
+| **Planner** | Opus（planモード） | コードベース探索、実装計画の作成 |
+| **Author** | Opus | コードベース探索、技術文書の作成 |
+| **Claude Reviewer** | Sonnet | 実際のコードベースとの照合検証 |
+
+### Agent Teamsモード（`/forge-team`）
+
+| エージェント | モデル | 役割 |
+|--------------|--------|------|
+| **Lead** | Opus | ラウンド調整、レビュー収集、判定決定 |
+| **Explorer** | Sonnet | コードベースの特定領域を調査、Plannerに報告 |
+| **Planner** | Sonnet/Opus（planモード） | Explorerを管理、計画を統合、ExitPlanModeを呼び出し |
+| **Scribe** | Sonnet | 計画を整形、ドキュメントとレビューファイルを書き込み |
+| **Claude Reviewer** | Sonnet | 実際のコードベースとの照合検証 |
+| **Gemini Reviewer** | Haiku | Geminiレビュースクリプトを実行、結果を転送 |
+| **OpenAI Reviewer** | Haiku | OpenAIレビュースクリプトを実行、結果を転送 |
+
+### レビュー基準
+
+全レビュアーは以下の5つの観点で評価します:
+
+1. **コードベースとの整合** — 実際のファイル、関数、パターンを参照しているか
+2. **明確性** — 論理が一貫し、アプローチが妥当か
+3. **完全性** — 抜け漏れや未考慮のエッジケースがないか
+4. **実現可能性** — 技術的に健全で実装可能か
+5. **テスト可能性** — 検証方法が明確か
+
+## 変更履歴
+
+- **4.0.4** — スキルdescriptionをコマンド専用トリガーに縮小、forge-teamコマンドをExplorer + Single Plannerアーキテクチャに合わせて修正
+- **4.0.3** — スキルYAMLフロントマター修正：kebab-case名、descriptionの引用符処理でパースエラー解消
+- **4.0.2** — forge-team-orchestratorスキルのdescription最適化（役割説明、トリガーキーワード、誤発動防止条件を追加）
+- **4.0.1** — Explorerクロスポリネーション修正（Planner仲介）、条件付きレビュアースポーン（有効なレビュアーのみ生成）
+- **4.0.0** — Agent Teamsモード（`/forge-team`）：並列Explorer＋専任Planner＋Scribe＋独立Reviewerをライブチームメイトとして運用。resumeなしでラウンド間の完全なコンテキスト保持。[v3 vs v4比較](docs/v4-comparison/)
+- **3.3.0** — イテレーション間のエージェントresume（コードベースコンテキスト保持）、writerエージェント削除、フォアグラウンド並列レビュー、レビュー履歴圧縮、全レビュアーに`--mode` plan/doc対応、セッションIDフォールバック
+- **3.2.0** — plan-metadata.shのクロスプラットフォーム互換性修正、コマンドにargument-hintとワークフローセクションを統一
+- **3.0.0** — plan/docモードでのドキュメント鍛造、設定パスの移行
+- **2.0.0** — マルチLLM鍛造ワークフロー
+- **1.1.0** — Geminiレビュー統合
+- **1.0.0** — 初回リリース
+
+## ライセンス
+
+MIT

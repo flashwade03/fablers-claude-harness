@@ -1,7 +1,42 @@
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
 *.swp
 *.swo
 *~
-.idea/
-.vscode/
+
+# Dependencies
 node_modules/
+package-lock.json
+
+# Secrets / local settings
+.env
+.env.*
+!.env.template
+*.local.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# TypeScript
+*.tsbuildinfo
+coverage/
+
+# Data
+data/
+*.pdf
+
+# Workspaces (eval/test artifacts)
+*-workspace/
+
+# Claude Code local state
+.claude/

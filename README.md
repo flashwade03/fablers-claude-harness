@@ -1,14 +1,14 @@
 <div align="center">
 
-# fablers-claude-harness
+# fablers
 
 **Stop prompting. Start harnessing.**
 
-A Claude Code plugin that encodes battle-tested design methodologies into reusable skills.
-No more ad-hoc prompting — just structured workflows that actually work.
+A Claude Code plugin marketplace packaging battle-tested workflows into reusable plugins.
+Design methodology, document forging, and agentic RAG — all in one place.
 
-[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.4.1-blue?style=for-the-badge)](#)
+[![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -17,93 +17,49 @@ No more ad-hoc prompting — just structured workflows that actually work.
 
 ---
 
-## Why?
+## Plugins
 
-AI-assisted coding is powerful, but without structure it's chaos. You end up with:
-- Over-specified designs that kill productivity
-- Under-specified designs that produce garbage
-- The same workflows reinvented every session
+### `vibe-architecture` — Design methodology & skill extraction
 
-**fablers-claude-harness** solves this by packaging proven methodologies as skills that Claude loads on demand.
+Encodes proven design methodologies into skills that Claude loads on demand. No more ad-hoc prompting — just structured workflows that actually work.
 
----
-
-## Skills
-
-### `vibe-design` — From rough idea to just-enough design
-
-> *"Design = Decisions + Constraints + Milestones. Never pseudocode."*
-
-Covers the full spectrum: from rough idea exploration to structured design documents. Use `/sketch` to start.
-
-| Step | What happens |
-|------|-------------|
-| Explore Context | Understand project state before asking anything. |
-| Scope Check | Is a design doc even needed? If not, skip and build. |
-| Idea Exploration | One question at a time. Propose 2-3 approaches with trade-offs. |
-| Decision Maturity | Confirmed decisions get rationale. Candidates stay as bullets. |
-| Domain Checklist | No critical decisions fall through the cracks. |
-| Write & Validate | Output fits ~200-300 lines. Every line is a decision, not implementation. |
+| Skill | What it does |
+|-------|-------------|
+| **vibe-design** | Turn rough ideas into just-enough design specs. Decisions + Constraints + Milestones, never pseudocode. |
+| **design-review** | Score design docs against 6 axes (S~F grade, 0-100 score). Any FAIL caps the grade at C. |
+| **session-skill-extractor** | Analyze conversations to extract reusable patterns. Routes findings to skills, CLAUDE.md, hookify, or memory. |
 
 ```
-> /sketch
-> 설계해줘
-> 아이디어 좀 정리하자
+> /sketch                          # Start a design
+> 설계 리뷰해줘                      # Review a design
+> 대화에서 스킬 추출해줘              # Extract skills from session
 ```
 
 ---
 
-### `design-review` — 6-axis scoring, S to F grade
+### `damascus` — Forge documents through iterative multi-LLM review
 
-> *"If it has pseudocode, it's not a design document."*
+> *Like Damascus steel, documents become stronger through repeated forging.*
 
-Scores any design document against 6 axes derived from real over-specification failures. Outputs a grade, a score, and exactly what to fix.
-
-```
-Grade: A | Score: 83
-
-┌─────────────────────┬───────┬────────┐
-│ Axis                │ Grade │ Points │
-├─────────────────────┼───────┼────────┤
-│ Decision Purity     │ PASS  │   2    │
-│ Rationale Presence  │ PASS  │   2    │
-│ Decision Maturity   │ WARN  │   1    │
-│ Context Budget      │ PASS  │   2    │
-│ Constraint Quality  │ PASS  │   2    │
-│ CLAUDE.md Alignment │ WARN  │   1    │
-└─────────────────────┴───────┴────────┘
-```
-
-Any single **FAIL** caps the grade at C. No shipping designs with fundamental issues.
+Refines documents through an iterative review loop powered by multiple LLMs. Write an implementation plan or technical document, have it reviewed by Claude, Gemini, and OpenAI in parallel, then refine until approved.
 
 ```
-> 설계 리뷰해줘
-> review my design
-> score this design
+> /forge <task description>        # Single-reviewer forging
+> /forge-team <task description>   # Multi-LLM team review
+> /forge-plan <task description>   # Plan-only mode
+> /forge-doc <task description>    # Document-only mode
 ```
 
 ---
 
-### `session-skill-extractor` — Turn conversations into skills
+### `fablers-agentic-rag` — Ask your documents. Get a cited answer.
 
-> *"Your best workflows shouldn't die when the session ends."*
-
-Analyzes your current conversation to find patterns worth preserving. If it finds something, it builds the skill for you.
-
-**How it works:**
-
-1. Scans the entire conversation for 6 signal types
-2. Scores candidates by reusability, complexity, and distinctness
-3. Presents proposals — you pick what to create
-4. Builds the skill with proper structure, trigger phrases, and references
-5. Verifies the output before finishing
-
-Low-complexity patterns get redirected to CLAUDE.md rules instead of full skills. No skill bloat.
+Agentic RAG pipeline — query analysis, hybrid retrieval (vector + BM25), CRAG validation, and cited answer synthesis — all orchestrated by Claude agents. Supports PDF, plain text, and Markdown.
 
 ```
-> 대화에서 스킬 추출해줘
-> extract skill from conversation
-> 이 세션에서 스킬 만들 게 있어?
+> /ingest <file>                   # Index a document
+> /ask <question>                  # Query with citations
+> /search <query>                  # Raw retrieval
 ```
 
 ---
@@ -114,14 +70,10 @@ Low-complexity patterns get redirected to CLAUDE.md rules instead of full skills
 # Add the marketplace
 /plugin marketplace add flashwade03/fablers-claude-plugins
 
-# Install the plugin
-/plugin install fablers-claude-harness@fablers
-```
-
-For local development:
-
-```bash
-claude --plugin-dir /path/to/fablers-claude-harness
+# Install individual plugins
+/plugin install vibe-architecture@fablers
+/plugin install damascus@fablers
+/plugin install fablers-agentic-rag@fablers
 ```
 
 ---
@@ -129,39 +81,40 @@ claude --plugin-dir /path/to/fablers-claude-harness
 ## Project Structure
 
 ```
-fablers-claude-harness/
+fablers/
 ├── .claude-plugin/
-│   ├── plugin.json              # Plugin manifest
-│   └── marketplace.json         # Marketplace metadata
-├── commands/
-│   └── sketch.md                # /sketch command
-└── skills/
-    ├── vibe-design/             # Design methodology
-    │   ├── SKILL.md
-    │   └── references/
-    │       ├── principles.md
-    │       ├── anti-patterns.md
-    │       └── domain-web-service.md
-    ├── design-review/           # 6-axis review scoring
-    │   ├── SKILL.md
-    │   ├── references/
-    │   └── examples/
-    └── session-skill-extractor/ # Conversation → Skill
-        ├── SKILL.md
-        └── references/
-            ├── analysis-criteria.md
-            └── transformation-guide.md
+│   └── marketplace.json
+├── plugins/
+│   ├── vibe-architecture/         # Design methodology
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   └── skills/
+│   │       ├── vibe-design/
+│   │       ├── design-review/
+│   │       └── session-skill-extractor/
+│   ├── damascus/                       # Document forging
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   ├── hooks/
+│   │   ├── scripts/
+│   │   └── skills/
+│   └── fablers-agentic-rag/            # Agentic RAG
+│       ├── .claude-plugin/plugin.json
+│       ├── agents/
+│       ├── commands/
+│       ├── hooks/
+│       ├── scripts/
+│       └── skills/
 ```
 
 ---
 
 ## Philosophy
 
-This plugin follows three principles:
-
 1. **Decisions, not implementation** — Design documents record *what* and *why*, never *how*
 2. **Progressive disclosure** — Core workflow loads first, details load only when needed
-3. **Earn your complexity** — Simple patterns stay simple. Skills are created only when the pattern is complex enough to justify one
+3. **Earn your complexity** — Simple patterns stay simple. Skills are created only when the pattern justifies one
 
 ---
 

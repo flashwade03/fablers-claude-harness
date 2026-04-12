@@ -1,0 +1,8 @@
+{
+  "name": "vibe-architecture",
+  "description": "Vibe coding design methodology — structured design, 6-axis review scoring, and session skill extraction",
+  "version": "0.5.0",
+  "author": {
+    "name": "flashwade03"
+  }
+}
