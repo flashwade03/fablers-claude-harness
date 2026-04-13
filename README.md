@@ -8,7 +8,7 @@ A Claude Code plugin marketplace packaging battle-tested workflows into reusable
 Design methodology, document forging, and agentic RAG — all in one place.
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,10 +27,12 @@ Encodes proven design methodologies into skills that Claude loads on demand. No 
 |-------|-------------|
 | **vibe-design** | Turn rough ideas into just-enough design specs. Decisions + Constraints + Milestones, never pseudocode. |
 | **design-review** | Score design docs against 6 axes (S~F grade, 0-100 score). Any FAIL caps the grade at C. |
+| **sketch-team-orchestrator** | Agent Teams workflow bundling design + review: parallel Designers (1–3) → Planner synthesis → Scribe writes → 2 Reviewers judge → loop until approved. |
 | **session-skill-extractor** | Analyze conversations to extract reusable patterns. Routes findings to skills, CLAUDE.md, hookify, or memory. |
 
 ```
-> /sketch                          # Start a design
+> /sketch                          # Start a design (single-agent Q&A)
+> /sketch-team <task>              # Agent Teams: design + review bundled, auto-iterates
 > 설계 리뷰해줘                      # Review a design
 > 대화에서 스킬 추출해줘              # Extract skills from session
 ```

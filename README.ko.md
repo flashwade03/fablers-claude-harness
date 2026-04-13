@@ -8,7 +8,7 @@
 설계 방법론, 문서 단조, 에이전틱 RAG — 한 곳에서.
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,10 +27,12 @@
 |------|--------|
 | **vibe-design** | 러프한 아이디어를 딱 필요한 만큼의 설계로. 결정 + 제약 + 마일스톤, 절대 의사코드 아님. |
 | **design-review** | 6축 평가로 설계 문서 점수 매기기 (S~F 등급, 0-100점). FAIL 1개면 등급 C 제한. |
+| **sketch-team-orchestrator** | Agent Teams 워크플로우로 설계 + 리뷰 번들: 병렬 Designer (1–3) → Planner 종합 → Scribe 작성 → Reviewer 2명 판정 → 승인까지 루프. |
 | **session-skill-extractor** | 대화를 분석해서 재사용 가능한 패턴 추출. 스킬, CLAUDE.md, hookify, memory로 라우팅. |
 
 ```
-> /sketch                          # 설계 시작
+> /sketch                          # 설계 시작 (단일 에이전트 Q&A)
+> /sketch-team <작업>              # Agent Teams: 설계 + 리뷰 번들, 자동 이터레이션
 > 설계 리뷰해줘                      # 설계 리뷰
 > 대화에서 스킬 추출해줘              # 세션에서 스킬 추출
 ```

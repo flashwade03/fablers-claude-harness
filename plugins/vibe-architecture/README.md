@@ -1,6 +1,6 @@
 # vibe-architecture
 
-Vibe coding design methodology — structured design, 6-axis review scoring, and session skill extraction.
+Vibe coding design methodology — structured design, 6-axis review scoring, Agent Teams design+review bundle, and session skill extraction.
 
 ## Skills
 
@@ -42,6 +42,30 @@ Any single FAIL caps the grade at C.
 > design quality check
 ```
 
+### sketch-team-orchestrator
+
+Bundle design + review into one Agent Teams workflow. Lead holds the user dialogue (vibe-design Step 0.5–1.5); then a team of Designers (1–3, parallel, distinct approaches) → Planner (cross-pollinate + synthesize) → Scribe (write) → Reviewers (Content + Structure, 6-axis rubric) runs autonomously, looping until APPROVED or `max_rounds` reached.
+
+- **Variable Designer count**: Lead picks 1–3 based on how contested the trade-off space is
+- **Two-pass exploration**: preliminary approaches → peer cross-pollination → refined approaches → synthesis
+- **Single writer (Scribe)**: design.md and .review.md — clean role boundaries, no file conflicts
+- **Strict rubric verdict**: any axis FAIL → NEEDS_REVISION; max_rounds cap (default 3); escalate to user if cap hit
+
+**Requires** `.claude/settings.json` with:
+```json
+{
+  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1,
+  "teammateMode": "tmux"
+}
+```
+`teammateMode: "tmux"` is optional but recommended — it opens a split pane per teammate so you can watch them work.
+
+```
+> /sketch-team design a job queue that handles retries and priorities
+> /sketch-team -n 5 architect multi-tenant data isolation
+> /sketch-team -o docs/features/notifications.md design the notification system
+```
+
 ### session-skill-extractor
 
 Analyze the current conversation to extract reusable patterns. Routes each finding to the best destination:
@@ -61,4 +85,5 @@ Analyze the current conversation to extract reusable patterns. Routes each findi
 
 | Command | Description |
 |---------|-------------|
-| `/sketch` | Start vibe-design interactively |
+| `/sketch` | Start vibe-design interactively (single-agent Q&A) |
+| `/sketch-team` | Agent Teams workflow — design + review bundled, auto-iterates until approved or max_rounds hit |

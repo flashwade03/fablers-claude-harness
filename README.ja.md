@@ -8,7 +8,7 @@
 設計方法論、ドキュメント鍛造、エージェンティックRAG — すべてを一箇所で。
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.7.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,10 +27,12 @@
 |--------|------|
 | **vibe-design** | ラフなアイデアを必要十分な設計に。決定 + 制約 + マイルストーン、疑似コードではない。 |
 | **design-review** | 6軸評価で設計ドキュメントをスコアリング（S〜Fグレード、0-100点）。FAIL1つでグレードC制限。 |
+| **sketch-team-orchestrator** | Agent Teams ワークフローで設計 + レビューを束ねる: 並列 Designer (1–3) → Planner が統合 → Scribe が記述 → Reviewer 2名が判定 → 承認までループ。 |
 | **session-skill-extractor** | 会話を分析して再利用可能なパターンを抽出。スキル、CLAUDE.md、hookify、memoryにルーティング。 |
 
 ```
-> /sketch                          # 設計を開始
+> /sketch                          # 設計を開始（単一エージェントQ&A）
+> /sketch-team <タスク>             # Agent Teams: 設計 + レビュー束ね、自動イテレーション
 > 設計をレビューして                   # 設計レビュー
 > 会話からスキルを抽出して              # セッションからスキル抽出
 ```
