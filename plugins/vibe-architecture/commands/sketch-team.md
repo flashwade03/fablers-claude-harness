@@ -1,22 +1,22 @@
 ---
 name: sketch-team
-description: "Design + review bundled into one Agent Teams workflow — parallel designers explore approaches, a planner synthesizes, a scribe writes, two reviewers judge against the 6-axis rubric, loop until approved."
+description: "Concrete multi-domain design workflow via Agent Teams — Specialist Designers (1-3 domains, Lead-decided) produce concrete artifacts, a Planner composes them with cross-domain coherence checks, a Scribe writes, two Reviewers judge against a concretion-friendly 6-axis rubric, loop until approved."
 argument-hint: "[-n max] [-o path] <task description>"
 ---
 
 # Sketch Team
 
-Design a system end-to-end using Agent Teams. Parallel Designers explore distinct approaches to the same task, a Planner cross-pollinates their findings and synthesizes a unified draft, a Scribe writes the design doc, and two Reviewers judge against the 6-axis vibe-coding rubric. Teammates stay alive across rounds — no resume needed. The loop terminates when the design passes review or `max_rounds` is reached.
+Produce a **concrete, multi-domain design document** using Agent Teams. Where `/sketch` (vibe-design alone) keeps decisions abstract so AI fills in implementation later, `/sketch-team` deliberately concretises: interfaces, data shapes, sequence diagrams, error patterns. Use it when the concretion itself *is* the decision (API contracts, message protocols, data models with cascading type implications).
 
-Lead conducts a dialogue with you first (vibe-design Step 0.5–1.5 — target doc confirmation + user-only decisions) before the team spawns. The team handles the AI-judgment-OK decisions, drafting, review, and revision.
+Lead conducts a dialogue with you first (vibe-design Step 0.5–1.5 — target doc confirmation + user-only decisions) before the team spawns. Then Lead picks 1–3 Specialist Designers based on the task's natural domain decomposition (e.g., `data-model`, `api-surface`, `protocol`, `error-handling`, `operations`). The team handles concretion + cross-domain composition + review autonomously.
 
 ## Workflow
 
 1. **Lead dialogue** — confirms target doc + locks user-only decisions (UX, scope, priorities) via vibe-design Step 0.5–1.5
-2. **Designers** (1–3, Lead-decided) → explore distinct approaches, report to Planner (preliminary → cross-pollinated → refined)
-3. **Planner** → synthesize refined approaches into unified draft text, return to Lead
+2. **Specialist Designers** (1–3, Lead picks domains from task) → produce concrete domain artifacts (preliminary → coherence-checked → refined)
+3. **Planner** → compose specialist artifacts into unified draft, resolving cross-domain conflicts using Confirmed Decisions as tiebreaker
 4. **Scribe** → write design doc to output path
-5. **Reviewers** (Content + Structure) → judge against the 6-axis rubric independently, send verdicts to Lead
+5. **Reviewers** (Content + Structure) → judge against the concretion-friendly 6-axis rubric (Specification Productivity / Rationale Presence / Decision Maturity / Specialist Coherence / Constraint Quality / CLAUDE.md Alignment)
 6. **Lead** → consolidate; any FAIL → NEEDS_REVISION else APPROVED
 7. **Scribe** → write `.review.md` with round history
 8. **Loop** → If NEEDS_REVISION and rounds remain, Planner revises with consolidated feedback. Max rounds → escalate to user.

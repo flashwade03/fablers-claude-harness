@@ -80,26 +80,34 @@ If any check fails, ask the user the specific missing piece rather than spawning
 
 (`PLUGIN_ROOT` is already resolved from Phase 0 Step 0 — reuse it.)
 
-### 1. Decide Designer Count and Approach Labels
+### 1. Decide Specialist Roster
 
-From the Confirmed + Open Decisions sheet, identify the **contested trade-off space**:
-- If there are 2–3 genuinely different ways to approach the core structural problem (e.g., WebSocket vs SSE vs polling; monolith-first vs service-boundary-first; eager-load vs lazy-load) → assign one Designer per approach, `designer_count = 2` or `3`
-- If the direction is essentially settled and only details remain → `designer_count = 1`
-- **Default when no clear trade-offs surfaced in dialogue**: `designer_count = 1`. Do not invent artificial approach axes just to justify more Designers — single-Designer is the honest answer when the dialogue already resolved the structural direction.
+`/sketch-team` produces **concrete multi-domain design artifacts** by composing specialist depth in 1–3 distinct domains. Each Designer is a Specialist in one domain — not an "approach" to the same problem. The team's value comes from cross-domain composition + coherence checking, which is what justifies the agent-teams overhead vs `/sketch`.
 
-Assign each Designer a **distinct approach label** that summarises their directional frame. Examples:
-- `approach-conservative` (prefer proven patterns, lowest risk)
-- `approach-balanced` (mainstream choice for this domain)
-- `approach-minimal` (smallest-viable surface, YAGNI-first)
-- `approach-aggressive` (optimised for future scale)
-- domain-specific labels when the axis is clearer (e.g., `approach-websocket`, `approach-sse`)
+From the locked Decision Sheet (task scope + Confirmed/Open Decisions), pick the specialist domains that the task actually needs. **Common specialist roles** (use task-specific labels — these are starting points):
 
-**Cap: never spawn more than 3 Designers.**
+| Role label | When to include | Produces |
+|---|---|---|
+| `data-model` | Persistence, schemas, type-driven logic | Concrete schemas with types where types matter for compatibility |
+| `api-surface` | External-facing API, library facade, CLI command shape | Endpoint contracts, command tables, function signatures where the contract is the decision |
+| `protocol` | Cross-component messaging, multi-agent coordination | Message formats, sequence diagrams, state machines |
+| `error-handling` | Failure-recovery is non-trivial (retries, partial success, rollback) | Failure modes + recovery patterns |
+| `operations` | Deployment, observability, rollback, performance ceilings | Operational decisions + their trade-offs |
+| `auth-and-trust` | Security boundaries, identity, permissions | Trust boundaries + auth flow |
+
+**Decision rule**:
+- Pick **only** the specialists the task actually needs. A pure CLI tool likely needs `api-surface` + maybe `data-model` — not `protocol` or `auth-and-trust`.
+- Cap at **3 specialists**. If the task seems to need 4+, the task is too large for one design — push back to user before TeamCreate.
+- Default when the task is small or the specialism axis is unclear: **1 specialist** with the broadest relevant role (often `api-surface`). Do not invent specialists to fill slots.
+
+You are free to invent task-specific role labels that don't appear in the table above when the task domain calls for it (e.g., `chunking-strategy`, `cache-invalidation`, `embedding-pipeline`). The roster's job is to map cleanly to the design's natural decomposition.
+
+**Cap: never spawn more than 3 Specialists.**
 
 ### 2. Assign Models
 
 Hardcoded for v0:
-- `designer-[N]`: sonnet
+- `specialist-[ROLE]`: sonnet
 - `planner`: sonnet
 - `scribe`: haiku
 - `reviewer-content`: haiku
@@ -122,14 +130,14 @@ The `TeamCreate` call registers the current agent (you) as `team-lead` automatic
 
 Spawn all teammates in a single message (parallel Agent calls). Each joins the team via `team_name: "sketch-team"`.
 
-**Designers** — iterate `N` from 1 through `designer_count` and issue one `Agent(...)` call per Designer. For `designer_count = 2`, that means two Agent calls named `designer-1` and `designer-2`, each with its assigned approach label:
+**Specialist Designers** — iterate over the roster and issue one `Agent(...)` call per Specialist. The teammate `name` is `specialist-[ROLE]` (e.g., `specialist-data-model`, `specialist-api-surface`). For a roster of `[data-model, api-surface]`, that means two Agent calls:
 ```
 Agent(
   team_name: "sketch-team",
-  name: "designer-[N]",
+  name: "specialist-[ROLE]",
   subagent_type: "Explore",
   model: "sonnet",
-  prompt: [EXACT text from ## Designer spawn prompt, with [N] and [APPROACH_LABEL] substituted]
+  prompt: [EXACT text from ## Specialist Designer spawn prompt, with [ROLE] and the role's domain description substituted]
 )
 ```
 
@@ -189,14 +197,14 @@ For detailed step-by-step procedures and exact SendMessage payloads for each pha
        ▼
   ┌─── Round N ──────────────────────────────────────────────────┐
   │                                                              │
-  │  Lead ──msg──▶ Planner (decisions + designer labels,         │
+  │  Lead ──msg──▶ Planner (decisions + specialist roster,       │
   │                           or revision feedback if N>1)       │
   │                                                              │
-  │  Planner ──msg──▶ Designers (assign approach labels)         │
-  │  Designers ──msg──▶ Planner (preliminary approaches)         │
-  │  Planner ──msg──▶ Designers (peer summaries + gap-check)     │
-  │  Designers ──msg──▶ Planner (refined approaches)             │
-  │  Planner ──msg──▶ Lead (unified draft text)                  │
+  │  Planner ──msg──▶ Specialists (assign role labels)           │
+  │  Specialists ──msg──▶ Planner (preliminary domain artifacts) │
+  │  Planner ──msg──▶ Specialists (peer summaries + coherence)   │
+  │  Specialists ──msg──▶ Planner (refined artifacts)            │
+  │  Planner ──msg──▶ Lead (composed draft text)                 │
   │                                                              │
   │  Lead ──msg──▶ Scribe (draft + output path, write design)    │
   │  Scribe ──msg──▶ Lead (write confirmed)                      │
@@ -219,9 +227,15 @@ For detailed step-by-step procedures and exact SendMessage payloads for each pha
 - **APPROVED** if all 6 axes are PASS or WARN (across both reviewers).
 - **NEEDS_REVISION** if any single axis returns FAIL from any reviewer.
 
-Axis ownership:
-- `reviewer-content` covers: Decision Purity, Rationale Presence, Decision Maturity
-- `reviewer-structure` covers: Context Budget, Constraint Quality, CLAUDE.md Alignment
+Axis ownership (concretion-friendly rubric — replaces vibe-design's anti-pseudocode rubric):
+- `reviewer-content` covers:
+  - **Specification Productivity** — concrete artifacts (signatures, schemas, sequence diagrams) must be load-bearing; decorative pseudocode = FAIL
+  - **Rationale Presence** — every decision and every concrete spec choice has a `because …` clause
+  - **Decision Maturity** — confirmed decisions and candidate items clearly separated; candidates have no rationale
+- `reviewer-structure` covers:
+  - **Specialist Coherence** — domain artifacts compose without contradiction (data model and API spec agree on types, etc.)
+  - **Constraint Quality** — boundaries, not implementation noise; concrete spec OK when it *is* the constraint
+  - **CLAUDE.md Alignment** — design doc referenced from CLAUDE.md, not duplicated
 
 ## Max-Rounds Escalation
 
@@ -275,11 +289,11 @@ TeamDelete()
 
 **Status**: [APPROVED / NEEDS_REVISION escalation resolved]
 **Rounds**: N / max_rounds
-**Designers**: [designer_count] ([approach labels])
+**Specialists**: [count] ([role labels])
 **Document**: [DOCUMENT_PATH]
 **Review**: [REVIEW_PATH]
 
-[Brief summary of the document's key decisions]
+[Brief summary of the document's key decisions and concrete artifacts]
 ```
 
 ## Key Rules
@@ -288,9 +302,9 @@ TeamDelete()
 - **Lead does NOT judge design content** — that is the Reviewers' job. Lead only consolidates verdicts and applies the rule.
 - **Phases are sequential per round** — Design → Write → Review → Consolidate. Each completes before the next begins.
 - **Teammates stay alive across rounds** — do NOT shut down or respawn between rounds. Context is naturally preserved.
-- **Planner never writes** — synthesizes approaches and returns draft text to Lead via SendMessage.
-- **Designers never write** — return approach text via SendMessage, both preliminary and refined.
+- **Planner never writes** — composes specialist artifacts and returns draft text to Lead via SendMessage.
+- **Specialists never write** — return domain artifact text via SendMessage, both preliminary and refined.
 - **Reviewers never write** — return 3-axis verdicts via SendMessage only.
-- **Approach labels must be distinct** — no two Designers in a round share the same label.
-- **Never spawn more than 3 Designers** — the cap protects token budget and preserves cross-pollination coherence.
+- **Specialist role labels must be distinct** — no two Specialists in a round share the same role.
+- **Never spawn more than 3 Specialists** — the cap protects token budget and preserves cross-domain coherence checking.
 - **Resolve output path once** (Phase 0 dialogue), then reuse every round.

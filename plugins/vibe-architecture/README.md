@@ -44,17 +44,20 @@ Any single FAIL caps the grade at C.
 
 ### sketch-team-orchestrator
 
-Bundle design + review into one Agent Teams workflow. Lead holds the user dialogue (vibe-design Step 0.5–1.5); then a team of Designers (1–3, parallel, distinct approaches) → Planner (cross-pollinate + synthesize) → Scribe (write) → Reviewers (Content + Structure, 6-axis rubric) runs autonomously, looping until APPROVED or `max_rounds` reached.
+Produce **concrete multi-domain designs** via Agent Teams. Where `/sketch` (vibe-design alone) keeps decisions abstract for AI to fill in later, `/sketch-team` deliberately concretises — interfaces, data shapes, sequence diagrams — because in some domains the concrete artifact *is* the decision (API contracts, message protocols, data models with cascading types).
 
-- **Variable Designer count**: Lead picks 1–3 based on how contested the trade-off space is
-- **Two-pass exploration**: preliminary approaches → peer cross-pollination → refined approaches → synthesis
+Lead holds the user dialogue (vibe-design Step 0.5–1.5), picks 1–3 **Specialist Designers** based on the task's natural domain decomposition (e.g., `data-model`, `api-surface`, `protocol`), then the team runs autonomously:
+
+- **Specialist roster, Lead-decided per task**: not "approaches" to the same problem — each Designer is the team's expert in one domain
+- **Two-pass coherence**: preliminary domain artifacts → cross-domain coherence check → refined artifacts → composition (not selection)
 - **Single writer (Scribe)**: design.md and .review.md — clean role boundaries, no file conflicts
-- **Strict rubric verdict**: any axis FAIL → NEEDS_REVISION; max_rounds cap (default 3); escalate to user if cap hit
+- **Concretion-friendly 6-axis rubric**: Specification Productivity / Rationale Presence / Decision Maturity / Specialist Coherence / Constraint Quality / CLAUDE.md Alignment. Allows load-bearing concrete artifacts (signatures, schemas, sequence diagrams) but rejects decorative pseudocode
+- **Strict verdict + max_rounds cap**: any axis FAIL → NEEDS_REVISION; cap default 3; escalate to user if hit
 
 **Requires** `.claude/settings.json` with:
 ```json
 {
-  "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1,
+  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
   "teammateMode": "tmux"
 }
 ```
@@ -65,6 +68,8 @@ Bundle design + review into one Agent Teams workflow. Lead holds the user dialog
 > /sketch-team -n 5 architect multi-tenant data isolation
 > /sketch-team -o docs/features/notifications.md design the notification system
 ```
+
+**When to use which**: `/sketch` for early-stage thinking where leaving implementation open is the right call. `/sketch-team` for designs where the concretion itself decides things (API contracts, message protocols, multi-domain data shapes).
 
 ### session-skill-extractor
 

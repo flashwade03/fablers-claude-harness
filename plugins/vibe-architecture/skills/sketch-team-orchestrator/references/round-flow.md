@@ -14,11 +14,11 @@ All placeholders below are derived from `[DOCUMENT_PATH]` resolved during Phase 
 
 Lead computes these once after Phase 0 and reuses them across all rounds.
 
-## Phase 1: Design (Planner manages Designers)
+## Phase 1: Design (Planner manages Specialists)
 
 ### Round 1 (Initial Draft)
 
-Send the decision sheet to the planner. The planner manages designers internally — Lead does not communicate with designers directly.
+Send the decision sheet to the planner. The planner manages Specialists internally — Lead does not communicate with Specialists directly.
 
 **To planner:**
 ```
@@ -29,14 +29,14 @@ SendMessage(
 
 Task: [TASK_DESCRIPTION]
 Target document: [DOCUMENT_PATH]
-Designers: [designer-1 (approach-[LABEL]), designer-2 (approach-[LABEL]), ...]
+Specialist roster: [specialist-[ROLE_1] (one-line role description), specialist-[ROLE_2] (one-line role description), ...]
 
 --- DECISION SHEET ---
 ## Confirmed Decisions
 [Paste the full 'Confirmed Decisions' section from Phase 0's sheet verbatim — each line of the form '- [Decision]: [what] — because [why]'.]
 
 ## Open Decisions (autonomous)
-[Paste the full 'Open Decisions' section verbatim — each line a bullet for a technical choice still open to Planner/Designer judgement.]
+[Paste the full 'Open Decisions' section verbatim — each line a bullet for a technical choice still open to Planner/Specialist judgement.]
 
 ## Target Document
 Path: [DOCUMENT_PATH]
@@ -44,19 +44,19 @@ Action: [create new | update existing]
 --- END ---
 
 Instructions:
-1. Send each designer their approach label and the decision sheet — ask each for a preliminary approach centered on that label
-2. Collect preliminary approaches from all designers — wait until all have reported
-3. Cross-pollinate: build a per-designer summary of peer approaches and send with a gap-check prompt — ask each designer how their approach changes given what peers found
-4. Collect refined approaches from all designers
-5. Synthesize the refined approaches into a unified draft that honours the Confirmed Decisions and resolves Open Decisions
-6. Send the unified draft text to 'team-lead' via SendMessage",
+1. Send each Specialist their role label + role description and the decision sheet — ask each for a preliminary domain artifact
+2. Collect preliminary artifacts from all Specialists — wait until all have reported
+3. Coherence-check (only when count ≥ 2): build a per-Specialist summary of peer artifacts AND a list of cross-domain conflicts you observed, then send with a coherence-check prompt — ask each Specialist to revise to compose with peers OR push back if their domain's correctness requires peers to change
+4. Collect refined artifacts from all Specialists
+5. Compose the refined artifacts into a unified draft that honours Confirmed Decisions and resolves Open Decisions, with concrete artifacts from each Specialist appearing in their natural section (Data Models, Interfaces, Sequence Diagrams, etc.)
+6. Send the composed draft text to 'team-lead' via SendMessage",
   summary: "Round 1 design"
 )
 ```
 
 **Draft collection:**
 
-Planner manages Designers autonomously — Lead does NOT intervene. Wait for the draft to arrive as a SendMessage from `planner` addressed to `team-lead`.
+Planner manages Specialists autonomously — Lead does NOT intervene. Wait for the draft to arrive as a SendMessage from `planner` addressed to `team-lead`.
 
 When received, extract the draft content. This is what the Scribe will write.
 
@@ -132,16 +132,16 @@ Document: [DOCUMENT_PATH]
 Instructions:
 1. Read the document at [DOCUMENT_PATH]
 2. Evaluate 3 axes with PASS / WARN / FAIL for each:
-   - Decision Purity — Every statement is a decision, not implementation (no pseudocode, no function signatures)
-   - Rationale Presence — Every confirmed decision explains why (because…). Candidate items stay without rationale.
-   - Decision Maturity — Confirmed decisions and candidate items are clearly separated and follow the rules in the vibe-design skill (confirmed has because; candidate does not)
-3. For each axis, include a brief explanation + concrete line references when possible
+   - Specification Productivity — Concrete artifacts (signatures, schemas, sequence diagrams, code blocks) must be load-bearing (pin down a decision prose alone wouldn't). Decorative pseudocode that just translates English to code-shaped text without adding decision content → FAIL.
+   - Rationale Presence — Every confirmed decision AND every concrete spec choice has a 'because …' clause. Candidate items in 'v0 이후 검토 방향' stay without rationale.
+   - Decision Maturity — Confirmed decisions and candidate items are structurally separated; confirmed has because, candidate does not.
+3. For each axis, include a brief explanation + concrete line references; for Specification Productivity FAIL, name the decorative artifacts.
 4. Return a structured verdict (below) to 'team-lead' (use EXACTLY recipient: 'team-lead')
 
 Verdict format:
 | Axis | Verdict | Notes |
 |------|---------|-------|
-| Decision Purity | PASS/WARN/FAIL | [1-2 lines, cite line numbers for issues] |
+| Specification Productivity | PASS/WARN/FAIL | ... |
 | Rationale Presence | PASS/WARN/FAIL | ... |
 | Decision Maturity | PASS/WARN/FAIL | ... |",
   summary: "Content review round [N]"
@@ -156,20 +156,22 @@ SendMessage(
   content: "REVIEW PHASE — Round [N]
 
 Document: [DOCUMENT_PATH]
+Specialist roster (this round): [LIST of specialist roles, e.g., data-model, api-surface]
 
 Instructions:
 1. Read the document at [DOCUMENT_PATH]
-2. Evaluate 3 axes with PASS / WARN / FAIL for each:
-   - Context Budget — Fits in ~200–300 lines of the core doc. Overflow goes into reference files, not the main doc.
-   - Constraint Quality — Constraints express boundaries (must / must not) rather than prescriptions for implementation details
-   - CLAUDE.md Alignment — The design doc is referenced by CLAUDE.md (link or pointer), not duplicated. No architecture / state machines / tool inventories in CLAUDE.md itself.
-3. For each axis, include a brief explanation + concrete line references when possible
-4. Return a structured verdict (below) to 'team-lead' (use EXACTLY recipient: 'team-lead')
+2. Read CLAUDE.md at the project root if it exists (for CLAUDE.md Alignment axis)
+3. Evaluate 3 axes with PASS / WARN / FAIL for each:
+   - Specialist Coherence — Domain artifacts produced by different specialists compose without contradiction (no type mismatches, no ordering / lifecycle conflicts, no missing cross-domain handoffs). If only one specialist participated, this axis is automatically PASS.
+   - Constraint Quality — Constraints express boundaries (must / must not). Concrete spec is allowed when it IS the constraint (e.g., 'must accept ISO-8601 UTC timestamps'). Prescriptive constraints that micromanage implementation choice → FAIL.
+   - CLAUDE.md Alignment — Design doc is referenced from CLAUDE.md (link / table row), not duplicated. If CLAUDE.md is absent, this axis is PASS but flag it.
+4. For each axis, include a brief explanation + concrete line references; for Specialist Coherence FAIL, name the contradicting domains.
+5. Return a structured verdict (below) to 'team-lead' (use EXACTLY recipient: 'team-lead')
 
 Verdict format:
 | Axis | Verdict | Notes |
 |------|---------|-------|
-| Context Budget | PASS/WARN/FAIL | ... |
+| Specialist Coherence | PASS/WARN/FAIL | ... |
 | Constraint Quality | PASS/WARN/FAIL | ... |
 | CLAUDE.md Alignment | PASS/WARN/FAIL | ... |",
   summary: "Structure review round [N]"
@@ -270,8 +272,8 @@ Wait for scribe to confirm.
 
 ## Edge Cases
 
-- **Single Designer** (designer_count = 1): Planner sends the assignment to designer-1, receives the preliminary approach, skips cross-pollination (no peers to summarise), then asks designer-1 to refine based on the decision sheet alone. Refined approach becomes the draft directly.
-- **Designer timeout / no response**: If a designer does not respond within a reasonable window, Planner should note the gap in its synthesis and proceed with the remaining approaches. Planner flags this condition to Lead in the draft submission so Lead can mention it in the final report.
-- **Designers converge to same approach**: If refined approaches from multiple designers are nearly identical, Planner synthesizes them as a single approach with stronger rationale rather than forcing artificial diversity.
+- **Single Specialist** (count = 1): Planner sends the assignment to that one Specialist, receives the preliminary artifact, skips coherence-check (no peers), then asks the Specialist to refine against the decision sheet alone. Refined artifact becomes the draft (with light editorial polish from Planner). Specialist Coherence axis is auto-PASS.
+- **Specialist timeout / no response**: If a Specialist does not respond within a reasonable window, Planner notes the gap in its draft submission (which sections of the doc are missing). Planner flags this condition to Lead so Lead can mention it in the final report. Reviewers will likely flag the missing domain on Specialist Coherence or Spec Productivity.
+- **Cross-domain conflict can't be resolved in coherence-check**: If two Specialists have a conflict that neither can yield on (e.g., data-model insists UUIDs are required but api-surface requires sortable IDs), Planner falls back to the **Confirmed Decisions** as tiebreaker. If Confirmed Decisions don't decide it, Planner picks the resolution that minimises change to peer artifacts and notes the override in the draft so the next round's review can sanity-check it.
 - **Reviewer disagreement between axes**: If an axis is PASS by one reviewer and FAIL by the other, Lead treats it as FAIL (any FAIL caps the verdict). The reviewer's reasoning is recorded so the Planner can address both perspectives in the revision.
-- **Draft exceeds context budget before Phase 3**: Reviewer-structure will catch this as Context Budget FAIL in Round 1 — no special Lead intervention needed.
+- **Draft length overshoot**: Reviewers don't enforce a hard length cap (the rubric replaced Context Budget with Specialist Coherence). If the core draft exceeds ~600 lines, Planner should consider offloading deep details to reference files in the next round, but this is a soft target — concrete artifacts that genuinely need the lines stay in.
