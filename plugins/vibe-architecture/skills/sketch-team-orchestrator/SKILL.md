@@ -16,7 +16,19 @@ Parse from user input:
 
 ## Phase 0 — Lead Dialogue (before team spawn)
 
-Before creating the team, Lead conducts vibe-design Step 0.5–1.5 with the user. Read `${CLAUDE_PLUGIN_ROOT}/skills/vibe-design/SKILL.md` and execute **only** steps 0.5 (target doc confirmation), 1 (Scope Check), and 1.5 (idea exploration dialogue). Skip steps 2–7 — the team handles those phases.
+### 0. Resolve Plugin Root
+
+Before doing anything else, resolve the plugin root (needed for reading vibe-design):
+
+```
+Bash(command: "echo $CLAUDE_PLUGIN_ROOT")
+```
+
+If empty, derive from this skill file's location — strip `/skills/sketch-team-orchestrator/SKILL.md` from the path. Store as `PLUGIN_ROOT` and reuse throughout the entire invocation (both Phase 0 and Phase 1).
+
+### Run vibe-design dialogue
+
+Read `${PLUGIN_ROOT}/skills/vibe-design/SKILL.md` and execute **only** steps 0.5 (target doc confirmation), 1 (Scope Check), and 1.5 (idea exploration dialogue). Skip steps 2–7 — the team handles those phases.
 
 ### Scope Check Exit
 
@@ -45,21 +57,27 @@ Action: [create new | update existing]
 
 Keep this sheet — you will embed it in Planner's initial message.
 
+### Validate the Decision Sheet
+
+Before proceeding to Phase 1, verify the sheet is usable:
+
+- At least one item under **Confirmed Decisions** (user dialogue actually produced something)
+- Each Confirmed Decision has a `because …` rationale
+- Target document path is resolved (absolute or project-relative, no placeholders)
+- Scope Check completed (not "설계 불필요")
+
+If any check fails, ask the user the specific missing piece rather than spawning a team with an incomplete sheet. Do NOT proceed to Phase 1 until the sheet is complete.
+
 ## Phase 1 — Team Setup (one-time)
 
-### 1. Resolve Plugin Root
+(`PLUGIN_ROOT` is already resolved from Phase 0 Step 0 — reuse it.)
 
-```
-Bash(command: "echo $CLAUDE_PLUGIN_ROOT")
-```
-
-If empty, derive from this skill file's location — strip `/skills/sketch-team-orchestrator/SKILL.md` from the path. Store as `PLUGIN_ROOT`.
-
-### 2. Decide Designer Count and Approach Labels
+### 1. Decide Designer Count and Approach Labels
 
 From the Confirmed + Open Decisions sheet, identify the **contested trade-off space**:
 - If there are 2–3 genuinely different ways to approach the core structural problem (e.g., WebSocket vs SSE vs polling; monolith-first vs service-boundary-first; eager-load vs lazy-load) → assign one Designer per approach, `designer_count = 2` or `3`
 - If the direction is essentially settled and only details remain → `designer_count = 1`
+- **Default when no clear trade-offs surfaced in dialogue**: `designer_count = 1`. Do not invent artificial approach axes just to justify more Designers — single-Designer is the honest answer when the dialogue already resolved the structural direction.
 
 Assign each Designer a **distinct approach label** that summarises their directional frame. Examples:
 - `approach-conservative` (prefer proven patterns, lowest risk)
@@ -70,7 +88,7 @@ Assign each Designer a **distinct approach label** that summarises their directi
 
 **Cap: never spawn more than 3 Designers.**
 
-### 3. Assign Models
+### 2. Assign Models
 
 Hardcoded for v0:
 - `designer-[N]`: sonnet
@@ -79,7 +97,7 @@ Hardcoded for v0:
 - `reviewer-content`: haiku
 - `reviewer-structure`: haiku
 
-### 4. Create Team
+### 3. Create Team
 
 ```
 TeamCreate(
@@ -88,13 +106,15 @@ TeamCreate(
 )
 ```
 
-### 5. Spawn Teammates
+The `TeamCreate` call registers the current agent (you) as `team-lead` automatically — this is the built-in Agent Teams convention. All teammates address you via `recipient: "team-lead"` and you use that inbox to receive their messages.
+
+### 4. Spawn Teammates
 
 **MANDATORY**: Before spawning, `Read("references/teammate-prompts.md")`. Use the exact text from each `Spawn prompt:` code block as the `prompt` parameter — do not write prompts from memory.
 
 Spawn all teammates in a single message (parallel Agent calls). Each joins the team via `team_name: "sketch-team"`.
 
-**Designers** (spawn `designer_count` instances, `N = 1..designer_count`):
+**Designers** — iterate `N` from 1 through `designer_count` and issue one `Agent(...)` call per Designer. For `designer_count = 2`, that means two Agent calls named `designer-1` and `designer-2`, each with its assigned approach label:
 ```
 Agent(
   team_name: "sketch-team",
@@ -208,14 +228,18 @@ Unresolved issues (by axis):
   [axis]: [brief issue summary]
 
 Options:
-1. **Continue** — run another round (re-invoke `/sketch-team -n N` with remaining effort budget)
-2. **Accept as-is** — the current design is good enough; use it
-3. **Rethink** — the design may be fundamentally wrong; consider reframing before iterating
+1. **Continue** — end this invocation, then re-run `/sketch-team -n N <same task>` to grant additional rounds. The current `[design].md` + `.review.md` are preserved, so the next invocation can start from the current state.
+2. **Accept as-is** — the current design is good enough; use the `[design].md` as it stands
+3. **Rethink** — the design may be fundamentally wrong; stop iterating and reframe the task before a future invocation
 
 Which would you like?
 ```
 
-Wait for user response. Do not auto-iterate. Then proceed to shutdown.
+Wait for user response. Do NOT auto-iterate within this invocation. The current invocation ends after this response regardless of which option is chosen:
+
+- **Continue**: proceed to shutdown and tell the user to re-invoke the command (Lead cannot restart itself mid-session)
+- **Accept as-is**: proceed to shutdown; the design doc is final
+- **Rethink**: proceed to shutdown; the user is expected to re-engage later with a reframed task
 
 ## Shutdown
 

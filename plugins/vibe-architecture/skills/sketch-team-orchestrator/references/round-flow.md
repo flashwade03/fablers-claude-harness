@@ -2,6 +2,18 @@
 
 > `[PLUGIN_ROOT]` below refers to the resolved plugin root path from Phase 1 Step 1 in SKILL.md. Substitute the actual path in all SendMessage content.
 
+## Path Variable Derivation
+
+All placeholders below are derived from `[DOCUMENT_PATH]` resolved during Phase 0 dialogue:
+
+- `[DOCUMENT_PATH]` — full path, e.g., `docs/features/notifications.md`
+- `[DOCUMENT_DIR]` — directory portion: everything before the final `/`, e.g., `docs/features`
+- `[DOCUMENT_NAME]` — basename with extension: everything after the final `/`, e.g., `notifications.md`
+- `[DOCUMENT_STEM]` — basename without extension: `[DOCUMENT_NAME]` minus trailing `.md`, e.g., `notifications`
+- `[REVIEW_PATH]` — `.review.md` path, computed as `[DOCUMENT_DIR]/[DOCUMENT_STEM].review.md`, e.g., `docs/features/notifications.review.md`
+
+Lead computes these once after Phase 0 and reuses them across all rounds.
+
 ## Phase 1: Design (Planner manages Designers)
 
 ### Round 1 (Initial Draft)
@@ -21,10 +33,10 @@ Designers: [designer-1 (approach-[LABEL]), designer-2 (approach-[LABEL]), ...]
 
 --- DECISION SHEET ---
 ## Confirmed Decisions
-[CONFIRMED_DECISIONS — each item: decision + because + why]
+[Paste the full 'Confirmed Decisions' section from Phase 0's sheet verbatim — each line of the form '- [Decision]: [what] — because [why]'.]
 
 ## Open Decisions (autonomous)
-[OPEN_DECISIONS — things Planner/Designers may decide]
+[Paste the full 'Open Decisions' section verbatim — each line a bullet for a technical choice still open to Planner/Designer judgement.]
 
 ## Target Document
 Path: [DOCUMENT_PATH]
@@ -183,7 +195,7 @@ SendMessage(
   content: "CONSOLIDATE PHASE — Round [N]
 
 Document path: [DOCUMENT_PATH]
-Review file path: [DOCUMENT_DIR]/[DOCUMENT_NAME].review.md
+Review file path: [REVIEW_PATH]
 Round: [N]
 Verdict: [APPROVED | NEEDS_REVISION]
 
