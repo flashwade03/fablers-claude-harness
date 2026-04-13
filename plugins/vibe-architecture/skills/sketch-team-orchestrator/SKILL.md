@@ -26,9 +26,17 @@ Bash(command: "echo $CLAUDE_PLUGIN_ROOT")
 
 If empty, derive from this skill file's location — strip `/skills/sketch-team-orchestrator/SKILL.md` from the path. Store as `PLUGIN_ROOT` and reuse throughout the entire invocation (both Phase 0 and Phase 1).
 
+### Dialogue Rules
+
+Use the **`AskUserQuestion`** tool for every dialogue turn. Pass one question at a time with 2–4 concrete options. The user can always pick "Other" for free-form input — treat that as the decision.
+
+If `-n` is tight, compress synthesis time (fewer team iterations), not dialogue time. The dialogue is the only place user-only decisions get locked.
+
 ### Run vibe-design dialogue
 
 Read `${PLUGIN_ROOT}/skills/vibe-design/SKILL.md` and execute **only** steps 0.5 (target doc confirmation), 1 (Scope Check), and 1.5 (idea exploration dialogue). Skip steps 2–7 — the team handles those phases.
+
+If the Read fails, still run the dialogue phase using the rules above plus your general understanding of vibe-design (target doc path → scope check → user-only decision dialogue). Do NOT collapse to multi-question batches just because the reference file was unavailable.
 
 ### Scope Check Exit
 
