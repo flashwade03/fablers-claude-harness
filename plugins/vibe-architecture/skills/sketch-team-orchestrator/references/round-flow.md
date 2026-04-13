@@ -62,7 +62,7 @@ When received, extract the draft content. This is what the Scribe will write.
 
 ### Round 2+ (Revision)
 
-Include consolidated review feedback from the previous round:
+Include consolidated review feedback from the previous round. Lead has the verdicts in memory from the previous round's Phase 3 — use those directly. Do NOT re-read `.review.md` (it is the audit artifact, not Lead's working state).
 
 ```
 SendMessage(
@@ -72,11 +72,14 @@ SendMessage(
 
 Previous verdict: NEEDS_REVISION
 
-Failed axes (from .review.md):
-[LIST of axes that failed + issues — keep it concise, ≤1 line per axis]
+Failed axes:
+[LIST of axes that failed + issues from previous round — keep it concise, ≤1 line per axis. Source: in-memory verdicts from previous round's Phase 3.]
 
-Review History:
-[REVIEW_HISTORY_TABLE from .review.md]
+Action required:
+[Lead's revision instructions for this round — same content Lead passed to Scribe in the previous round's Phase 4 (the 'Action required' field).]
+
+Review History (rounds 1..N-1):
+[Brief summary of each prior round's verdict + key failed axes — ≤1 line per round.]
 
 Instructions:
 1. Re-engage designers only if specific approaches need revisiting to fix the failed axes
@@ -186,7 +189,10 @@ When BOTH have replied, apply the verdict rule:
 
 ## Phase 4: Consolidate Review File
 
-After determining verdict, consolidate both reviews and send to the scribe.
+After determining verdict, Lead first **constructs the action-required summary** itself (a short revision plan derived from the failed axes), then consolidates both reviews + the action summary and sends to the scribe.
+
+For APPROVED rounds: action required is `"none — APPROVED"`.
+For NEEDS_REVISION rounds: action required is a 1–3 line revision plan (e.g., "Move pseudocode in Tag Storage section to constraints; add rationale to scope decision; trim Examples to fit Context Budget"). This is the same content Lead will reuse when constructing Round N+1's Planner message.
 
 ```
 SendMessage(
@@ -198,6 +204,8 @@ Document path: [DOCUMENT_PATH]
 Review file path: [REVIEW_PATH]
 Round: [N]
 Verdict: [APPROVED | NEEDS_REVISION]
+
+Action required: [Lead's 1–3 line revision plan, or 'none — APPROVED']
 
 --- CONTENT REVIEW (reviewer-content) ---
 [CONTENT_REVIEW_TABLE]

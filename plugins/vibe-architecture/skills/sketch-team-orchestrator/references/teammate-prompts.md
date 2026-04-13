@@ -189,7 +189,7 @@ verdict: [APPROVED | NEEDS_REVISION]
 ### Consolidated
 - Overall verdict: [APPROVED | NEEDS_REVISION]
 - Failed axes: [list, or 'none']
-- Action required: [from team-lead's consolidated instructions, or 'none — APPROVED']
+- Action required: [paste team-lead's `Action required` field from the Phase 4 message verbatim]
 
 6. Confirm completion to 'team-lead'
 
