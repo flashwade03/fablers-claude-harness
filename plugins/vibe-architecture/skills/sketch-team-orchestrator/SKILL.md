@@ -28,7 +28,7 @@ If empty, derive from this skill file's location — strip `/skills/sketch-team-
 
 ### Dialogue Rules
 
-Use the **`AskUserQuestion`** tool for every dialogue turn. Pass one question at a time with 2–4 concrete options. The user can always pick "Other" for free-form input — treat that as the decision.
+Use the **`AskUserQuestion`** tool for every dialogue turn. **Exactly one entry in the `questions` array per call** — the tool's API accepts 1–4, but this skill requires one, because batching questions in a single call defeats the dialogue's purpose (each decision needs to be locked before the next question is framed, since later questions often depend on earlier answers). Include 2–4 concrete `options` per question. The user can always pick "Other" for free-form input — treat that as the decision.
 
 If `-n` is tight, compress synthesis time (fewer team iterations), not dialogue time. The dialogue is the only place user-only decisions get locked.
 

@@ -1,112 +1,185 @@
 #!/bin/bash
-# Toggle dev mode: symlink the fablers marketplace cache to this local repo
-# so Claude Code loads plugins from here instead of the checked-out cache.
+# Toggle dev mode: symlink installed plugin cache directories to this local
+# repo's `plugins/<name>/` sources so Claude Code loads live edits without
+# reinstall.
+#
+# The marketplace-level symlink is not enough — Claude Code loads plugins
+# from the per-version cache path recorded in installed_plugins.json, not
+# from the marketplace directory. This script replaces those cache
+# directories with symlinks to the repo sources.
 #
 # Usage:
-#   bash scripts/dev-mode.sh --enable   # backup cache + symlink this repo
-#   bash scripts/dev-mode.sh --disable  # restore original cache
-#   bash scripts/dev-mode.sh --status   # show current state
+#   bash scripts/dev-mode.sh --enable
+#   bash scripts/dev-mode.sh --disable
+#   bash scripts/dev-mode.sh --status
 #
-# After toggling, restart Claude Code for changes to take effect. You may
-# also need to run /plugin marketplace update fablers inside Claude Code
-# to pick up the new plugin roster (e.g., vibe-architecture replacing the
-# old fablers-claude-harness).
+# After toggling, run `/reload-plugins` inside Claude Code to pick up
+# frontmatter/manifest changes. Body-only edits take effect on the next
+# skill invocation without a reload.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-MARKETPLACE_DIR="$HOME/.claude/plugins/marketplaces/fablers"
-BACKUP_DIR="${MARKETPLACE_DIR}.bak"
+INSTALLED_JSON="$HOME/.claude/plugins/installed_plugins.json"
+
+# Plugins to manage: "<plugin_id>:<repo-subdir>"
+PLUGIN_IDS=(
+  "vibe-architecture@fablers:plugins/vibe-architecture"
+  "damascus@fablers:plugins/damascus"
+  "fablers-agentic-rag@fablers:plugins/fablers-agentic-rag"
+)
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 usage() {
   cat <<EOF
 Usage: $0 [--enable|--disable|--status]
 
-  --enable   Backup current marketplace cache and symlink this repo in its place
-  --disable  Remove symlink and restore backup
-  --status   Show current state
+  --enable   For each installed fablers plugin, backup its installed cache
+             directory and symlink it to the matching repo subdirectory.
+  --disable  Remove symlinks and restore backups.
+  --status   Show per-plugin dev-mode state.
 
-After toggling, restart Claude Code. Inside Claude Code you may need:
-  /plugin marketplace update fablers
-  /plugin install vibe-architecture@fablers
+After toggling, inside Claude Code run /reload-plugins (or restart).
 EOF
 }
 
-do_status() {
-  if [ -L "$MARKETPLACE_DIR" ]; then
-    local target
-    target=$(readlink "$MARKETPLACE_DIR")
-    echo -e "${GREEN}Dev mode: ENABLED${NC}"
-    echo "  Symlink: $MARKETPLACE_DIR"
-    echo "  Target:  $target"
-    [ -d "$BACKUP_DIR" ] && echo "  Backup:  $BACKUP_DIR (present)"
-  elif [ -d "$MARKETPLACE_DIR" ]; then
-    echo -e "${YELLOW}Dev mode: DISABLED${NC}"
-    echo "  Real directory: $MARKETPLACE_DIR"
-    [ -d "$BACKUP_DIR" ] && echo "  Backup exists:  $BACKUP_DIR (stale?)"
-  else
-    echo -e "${RED}No fablers marketplace found at $MARKETPLACE_DIR${NC}"
-    echo "Install first: /plugin marketplace add flashwade03/fablers-claude-plugins"
-    exit 1
+get_install_path() {
+  local plugin_id="$1"
+  [ -f "$INSTALLED_JSON" ] || return
+  python3 - <<PY 2>/dev/null
+import json, os, sys
+path = os.path.expanduser("$INSTALLED_JSON")
+try:
+    data = json.load(open(path))
+except Exception:
+    sys.exit(0)
+entries = data.get("plugins", {}).get("$plugin_id", [])
+if entries:
+    p = entries[0].get("installPath", "")
+    p = p.replace("~", os.path.expanduser("~"))
+    print(p)
+PY
+}
+
+plugin_status() {
+  local plugin_id="$1" repo_subdir="$2"
+  local install_path
+  install_path=$(get_install_path "$plugin_id")
+  echo -e "${CYAN}$plugin_id${NC}"
+  if [ -z "$install_path" ]; then
+    echo -e "  ${RED}not installed${NC}"
+    return
   fi
-  echo "  Repo root: $REPO_ROOT"
+  echo "  installPath: $install_path"
+  echo "  target:      $REPO_ROOT/$repo_subdir"
+  if [ -L "$install_path" ]; then
+    local linked
+    linked=$(readlink "$install_path")
+    if [ "$linked" = "$REPO_ROOT/$repo_subdir" ]; then
+      echo -e "  state:       ${GREEN}ENABLED${NC} (symlink correct)"
+    else
+      echo -e "  state:       ${YELLOW}symlink, but to $linked${NC}"
+    fi
+  elif [ -d "$install_path" ]; then
+    echo -e "  state:       ${YELLOW}DISABLED${NC} (real dir)"
+    if [ -d "${install_path}.bak" ]; then echo -e "  backup:      ${YELLOW}${install_path}.bak exists${NC}"; fi
+  else
+    echo -e "  state:       ${RED}path missing${NC}"
+  fi
+}
+
+plugin_enable() {
+  local plugin_id="$1" repo_subdir="$2"
+  local install_path target
+  install_path=$(get_install_path "$plugin_id")
+  target="$REPO_ROOT/$repo_subdir"
+
+  if [ -z "$install_path" ]; then
+    echo -e "${YELLOW}$plugin_id${NC}: not installed — skip (install it first with /plugin install)"
+    return
+  fi
+  if [ ! -d "$target" ]; then
+    echo -e "${RED}$plugin_id${NC}: repo target $target missing — skip"
+    return
+  fi
+  if [ -L "$install_path" ]; then
+    echo -e "${YELLOW}$plugin_id${NC}: already a symlink ($(readlink "$install_path")) — skip"
+    return
+  fi
+  if [ ! -d "$install_path" ]; then
+    echo -e "${RED}$plugin_id${NC}: install path $install_path missing — skip"
+    return
+  fi
+
+  local backup="${install_path}.bak"
+  if [ -d "$backup" ]; then
+    echo -e "${YELLOW}$plugin_id${NC}: backup $backup already exists — removing current cache"
+    rm -rf "$install_path"
+  else
+    echo -e "${CYAN}$plugin_id${NC}: backing up $install_path -> $backup"
+    mv "$install_path" "$backup"
+  fi
+  ln -s "$target" "$install_path"
+  echo -e "${GREEN}$plugin_id${NC}: linked $install_path -> $target"
+}
+
+plugin_disable() {
+  local plugin_id="$1" _repo_subdir="$2"
+  local install_path
+  install_path=$(get_install_path "$plugin_id")
+
+  if [ -z "$install_path" ]; then
+    echo -e "${YELLOW}$plugin_id${NC}: not installed — skip"
+    return
+  fi
+  if [ ! -L "$install_path" ]; then
+    echo -e "${YELLOW}$plugin_id${NC}: not a symlink, nothing to disable — skip"
+    return
+  fi
+
+  local backup="${install_path}.bak"
+  rm "$install_path"
+  if [ -d "$backup" ]; then
+    echo -e "${CYAN}$plugin_id${NC}: restoring $backup -> $install_path"
+    mv "$backup" "$install_path"
+    echo -e "${GREEN}$plugin_id${NC}: restored"
+  else
+    echo -e "${YELLOW}$plugin_id${NC}: symlink removed but no backup found — reinstall needed"
+  fi
+}
+
+do_status() {
+  for entry in "${PLUGIN_IDS[@]}"; do
+    plugin_id="${entry%%:*}"
+    repo_subdir="${entry#*:}"
+    plugin_status "$plugin_id" "$repo_subdir"
+  done
+  echo
+  echo "Repo: $REPO_ROOT"
 }
 
 do_enable() {
-  if [ -L "$MARKETPLACE_DIR" ]; then
-    echo -e "${YELLOW}Dev mode already enabled.${NC}"
-    echo "  Symlink: $MARKETPLACE_DIR -> $(readlink "$MARKETPLACE_DIR")"
-    exit 0
-  fi
-
-  if [ ! -d "$MARKETPLACE_DIR" ]; then
-    echo -e "${RED}No fablers marketplace found at $MARKETPLACE_DIR${NC}"
-    echo "Install it first inside Claude Code:"
-    echo "  /plugin marketplace add flashwade03/fablers-claude-plugins"
-    exit 1
-  fi
-
-  if [ -d "$BACKUP_DIR" ]; then
-    echo -e "${YELLOW}Backup already exists at $BACKUP_DIR${NC}"
-    echo "Removing current cache (old backup kept)..."
-    rm -rf "$MARKETPLACE_DIR"
-  else
-    echo "Backing up: $MARKETPLACE_DIR -> $BACKUP_DIR"
-    mv "$MARKETPLACE_DIR" "$BACKUP_DIR"
-  fi
-
-  ln -s "$REPO_ROOT" "$MARKETPLACE_DIR"
-  echo -e "${GREEN}Dev mode enabled.${NC}"
-  echo "  Symlink: $MARKETPLACE_DIR -> $REPO_ROOT"
-  echo ""
-  echo "Next steps:"
-  echo "  1. Restart Claude Code"
-  echo "  2. Inside Claude Code: /plugin marketplace update fablers"
-  echo "  3. Inside Claude Code: /plugin install vibe-architecture@fablers"
+  for entry in "${PLUGIN_IDS[@]}"; do
+    plugin_id="${entry%%:*}"
+    repo_subdir="${entry#*:}"
+    plugin_enable "$plugin_id" "$repo_subdir"
+  done
+  echo
+  echo "Next: inside Claude Code run /reload-plugins (or restart) to pick up manifest changes."
 }
 
 do_disable() {
-  if [ ! -L "$MARKETPLACE_DIR" ]; then
-    echo -e "${YELLOW}Dev mode is not enabled (not a symlink).${NC}"
-    exit 0
-  fi
-
-  rm "$MARKETPLACE_DIR"
-  if [ -d "$BACKUP_DIR" ]; then
-    echo "Restoring: $BACKUP_DIR -> $MARKETPLACE_DIR"
-    mv "$BACKUP_DIR" "$MARKETPLACE_DIR"
-    echo -e "${GREEN}Dev mode disabled. Original marketplace restored.${NC}"
-  else
-    echo -e "${YELLOW}Symlink removed but no backup found.${NC}"
-    echo "Re-add the marketplace inside Claude Code if needed:"
-    echo "  /plugin marketplace add flashwade03/fablers-claude-plugins"
-  fi
-  echo ""
-  echo "Restart Claude Code for changes to take effect."
+  for entry in "${PLUGIN_IDS[@]}"; do
+    plugin_id="${entry%%:*}"
+    repo_subdir="${entry#*:}"
+    plugin_disable "$plugin_id" "$repo_subdir"
+  done
+  echo
+  echo "Next: inside Claude Code run /reload-plugins (or restart)."
 }
 
 case "${1:-}" in
