@@ -90,6 +90,30 @@ plugin_status() {
   else
     echo -e "  state:       ${RED}path missing${NC}"
   fi
+
+  # Warn about stale higher-version dirs that would outrank our symlink
+  local parent installed_version_name
+  parent=$(dirname "$install_path")
+  installed_version_name=$(basename "$install_path")
+  if [ -d "$parent" ]; then
+    local stale_found=""
+    for entry in "$parent"/*/; do
+      [ -e "$entry" ] || continue
+      local name
+      name=$(basename "${entry%/}")
+      # Skip .bak and the install path itself
+      [[ "$name" == *.bak ]] && continue
+      [ "$name" = "$installed_version_name" ] && continue
+      # Higher version dirs (lexicographic sort is a good enough heuristic for semver)
+      if [[ "$name" > "$installed_version_name" ]]; then
+        stale_found="$stale_found $name"
+      fi
+    done
+    if [ -n "$stale_found" ]; then
+      echo -e "  ${RED}WARNING${NC}: higher-version dirs present —${stale_found} — plugin loader picks these over your symlink!"
+      echo -e "           Fix:    rm -rf${stale_found/#/ $parent/}"
+    fi
+  fi
 }
 
 plugin_enable() {
