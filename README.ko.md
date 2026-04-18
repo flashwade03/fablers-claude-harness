@@ -8,7 +8,7 @@
 설계 방법론, 문서 단조, 에이전틱 RAG — 한 곳에서.
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.8.0-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.9.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,7 +27,7 @@
 |------|--------|
 | **vibe-design** | 러프한 아이디어를 딱 필요한 만큼의 설계로. 결정 + 제약 + 마일스톤, 절대 의사코드 아님. |
 | **design-review** | 6축 평가로 설계 문서 점수 매기기 (S~F 등급, 0-100점). FAIL 1개면 등급 C 제한. |
-| **sketch-team-orchestrator** | Agent Teams 워크플로우로 **구체적 멀티-도메인 설계**: Specialist Designer 1–3명 (data-model / api-surface / protocol 등, Lead가 task별 결정)이 구체 artifact 생산, Planner가 cross-domain 일관성 체크 후 합성, Reviewer 2명이 구체화-친화 6축 rubric으로 판정, 승인까지 루프. |
+| **sketch-team-orchestrator** | Agent Teams 워크플로우로 **구체적 멀티-도메인 설계 + 적대적 비평**: Specialist Designer 1–3명 (data-model / api-surface / protocol 등, Lead가 task별 결정)이 구체 artifact 생산, Challenger가 weakest assumption / alternative framing / missed edge case 비평 (`-c` 플래그 시 specialist별 짝 Critic), Planner가 비평과 cross-domain 일관성 통합 후 합성, Reviewer 2명이 구체화-친화 6축 rubric으로 판정, 승인까지 루프. |
 | **session-skill-extractor** | 대화를 분석해서 재사용 가능한 패턴 추출. 스킬, CLAUDE.md, hookify, memory로 라우팅. |
 
 ```

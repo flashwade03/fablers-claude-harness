@@ -17,9 +17,17 @@ Produce a **concrete, multi-domain design document** by combining specialist Des
 
 - **Specialist Designers, Lead-decided per task** — Lead identifies the relevant specialist roles (e.g., `data-model`, `api-surface`, `protocol`, `error-handling`, `operations`, `auth-and-trust`) from the task and locked decisions, then assigns one Designer per specialist (1–3 specialists). Because: agent-teams' real value comes from each Designer bringing *expert depth in one domain*, not from running parallel "approaches" to the same problem. A data-model specialist produces concrete schemas; an api-surface specialist produces concrete endpoint contracts. Synthesis = composition, not selection.
 
-- **Six-member team** (Lead + Specialist Designer × 1–3 + Planner + Scribe + Content Reviewer + Structure Reviewer). Because: each cognitive mode gets its own role — Lead (orchestration), Specialists (domain depth), Planner (cross-domain synthesis), Scribe (writing), Reviewer (evaluation). Single-writer pattern prevents file conflicts.
+- **Seven-member default team** (Lead + Specialist Designer × 1–3 + **Challenger × 1** + Planner + Scribe + Content Reviewer + Structure Reviewer). With the `-c` flag, Challengers scale to **one per Specialist** (8–10 members total). Because: each cognitive mode gets its own role — Lead (orchestration), Specialists (domain depth), Challenger (adversarial critique of Specialist assumptions), Planner (cross-domain synthesis), Scribe (writing), Reviewer (rubric evaluation). Single-writer pattern prevents file conflicts.
 
-- **Two-pass specialist iteration (preliminary → cross-pollinate → refined)** — Specialists submit preliminary domain artifacts; Planner shares peer summaries + asks each specialist to check for cross-domain conflicts (does your API contract assume something the data model doesn't support?); Specialists submit refined artifacts. Because: cross-domain consistency is the fragile property in concrete design. Without explicit cross-pollination, specialists produce locally-correct outputs that don't compose.
+- **Challenger role — adversarial review during design, not after** — reads every preliminary Specialist artifact and produces a reasoned counter-argument for each one (weakest assumption; alternative framing; missed edge case). Delivered to Planner, who integrates critique with peer summaries into one coherence-check message per Specialist. Refined artifacts must respond to the challenge either by adjusting or by stating why the challenge is rejected. Because: Specialists can be locally correct AND collectively wrong — they might agree on a shared faulty premise. Reviewers catch rubric violations post-hoc but not premise-level mistakes. A dedicated Challenger during the design phase surfaces blind spots before writing.
+
+- **Challenger scope — Open Decisions only** — Challenger may attack choices in the Open Decisions territory (implementation approach, library selection, internal structure) but **MUST NOT** challenge Confirmed Decisions (came from user dialogue). If a Confirmed Decision looks suspect, Challenger surfaces it to Planner as "open question for user" rather than self-overriding it. Because: vibe-design's core principle "AI cannot guess user-only decisions" applies to Challenger too.
+
+- **Per-Specialist critic mode (`-c` flag)** — spawns one Challenger per Specialist (same count as Specialists). Each Challenger is paired with one Specialist and focuses adversarial attention on that domain only. Default (no flag) uses a single Challenger that reads all Specialists and produces cross-cutting critiques. Because: for high-stakes designs, paired critics give deeper per-domain adversarial scrutiny; for most designs, a single Challenger catches enough blind spots at a fraction of the cost.
+
+- **Alternatives surface inline in the final doc** — whenever Challenger raises a viable alternative that was considered and rejected, the decision appears in the draft as `Alternative considered: X — rejected because Y`. Because: design docs that record only the chosen decision hide the reasoning from future readers; future engineers encountering "why did you not do X?" should find the rejection rationale already answered.
+
+- **Two-pass specialist iteration with challenge integration**: preliminary → **Challenger reads + produces critique** → Planner integrates peer summary + critique into coherence-check → Specialists refine → compose. Because: cross-domain consistency (from peer summaries) and premise correctness (from Challenger) are two different failure modes. Merging both into one coherence-check message lets Specialists respond to the whole picture in a single refinement.
 
 - **Planner = cross-domain synthesizer, does not write** — Planner composes specialist outputs into one unified draft text; resolves cross-domain conflicts using the locked Confirmed Decisions; sends to Lead. Lead forwards to Scribe. Because: clean role separation — synthesis (cognitive) vs writing (mechanical) shouldn't mix in one agent.
 
@@ -48,26 +56,30 @@ Produce a **concrete, multi-domain design document** by combining specialist Des
 ## Constraints
 
 - Must: Lead conducts vibe-design Step 0.5–1.5 dialogue + Scope Check **before** TeamCreate.
-- Must: Lead's initial Planner message includes (1) Confirmed Decisions, (2) Open Decisions, (3) specialist roster (with role labels), (4) target document path.
+- Must: Lead's initial Planner message includes (1) Confirmed Decisions, (2) Open Decisions, (3) specialist roster (with role labels), (4) target document path, (5) critic-mode flag (single vs per-specialist).
 - Must: Each Specialist's role label is distinct in a single round.
-- Must: Cross-pollination happens before final draft — Planner sends each Specialist a summary of peer outputs + a coherence-check prompt.
+- Must: Coherence-check message Planner sends each Specialist integrates peer summary AND Challenger critique — do not send them separately.
 - Must: Planner returns only draft text to Lead — never writes files.
 - Must: Scribe is the only agent holding the Write tool.
 - Must: Reviewers evaluate the written design doc file (not in-flight draft text).
 - Must: Concrete artifacts in the design doc must each carry a brief `because …` rationale (Specification Productivity axis).
+- Must: When Challenger's alternative is rejected, record it inline as `Alternative considered: X — rejected because Y` next to the winning decision.
 - Must not: Spawn more than 3 Specialists in one round.
+- Must not: Challenger attack Confirmed Decisions — those came from user dialogue and are non-negotiable. Surface concerns to Planner as "open question for user" instead.
 - Must not: Lead skip dialogue on a one-liner input — at least 1–2 clarifying questions required.
 - Must not: Reviewers modify the design doc.
-- Must not: Add a settings file (`.local.md`) for v0 — `-n` flag is the only configuration surface.
+- Must not: Add a settings file (`.local.md`) for v0 — `-n` and `-c` flags are the only configuration surface.
 - Must not: Use `/sketch-team` for tasks where vibe-design's Scope Check returns "설계 불필요" — exit before TeamCreate.
 
 ## Scope
 
 **In scope (v0)**:
-- `/sketch-team [task]` with `-n max_rounds` (default 3) and `-o output_path` flags
-- 6-role team with Lead-decided specialist count (1–3) and role labels
-- Two-pass specialist iteration with cross-domain coherence check
+- `/sketch-team [task]` with `-n max_rounds` (default 3), `-o output_path`, and `-c` (per-specialist critics) flags
+- 7-role default team; 8–10-role team under `-c`
+- Challenger adversarial critique during design (not only post-hoc review)
+- Two-pass specialist iteration with cross-domain coherence check + critique integration
 - Concretion-friendly 6-axis rubric (replaces vibe-design's anti-pseudocode rubric)
+- Inline `Alternative considered: X — rejected because Y` entries next to challenged decisions
 - `[design].review.md` every round
 - README + docs documenting required `.claude/settings.json`
 
@@ -78,14 +90,16 @@ Produce a **concrete, multi-domain design document** by combining specialist Des
 - Round resume on partial failure
 - Custom rubric injection
 - Specialist library (predefined roster for common task types)
+- Challenger can override Confirmed Decisions (currently forbidden — would require a different dialogue-escalation protocol)
 
 ## Agent Roles
 
 | Role | Tools | Responsibility |
 |---|---|---|
-| **Lead** | Orchestration only | Conducts vibe-design Step 0.5–1.5 dialogue, decides specialist count + role labels from task scope, spawns team, sends task + revision feedback to Planner, collects Reviewer verdicts, consolidates verdict + builds Action Required summary, terminates. Never writes files. Never judges design content. |
-| **Specialist Designer × 1–3** | Read / Glob / Grep | Receives one specialist role label + decision sheet. Produces preliminary domain artifact (data schemas / API contracts / sequence diagrams / error patterns / etc.) with rationale per spec choice. Receives peer summaries + coherence-check from Planner. Produces refined artifact. Returns text only. |
-| **Planner** | Read / Glob / Grep | Coordinates Specialists: assigns initial roles, collects preliminary artifacts, cross-pollinates (peer summaries + coherence-check prompts), collects refined artifacts, composes into a unified draft (resolves cross-domain conflicts using Confirmed Decisions as tiebreaker), sends to Lead. Never writes files. |
+| **Lead** | Orchestration only | Conducts vibe-design Step 0.5–1.5 dialogue, decides specialist count + role labels + critic mode (single / per-specialist with `-c`), spawns team, sends task + revision feedback to Planner, collects Reviewer verdicts, consolidates verdict + builds Action Required summary, terminates. Never writes files. Never judges design content. |
+| **Specialist Designer × 1–3** | Read / Glob / Grep | Receives one specialist role label + decision sheet. Produces preliminary domain artifact (schemas / API contracts / sequence diagrams / error patterns / etc.) with rationale per spec choice. Receives integrated peer summaries + challenger critique from Planner. Produces refined artifact that responds to critique. Returns text only. |
+| **Challenger × 1 (default) or × N (`-c`)** | Read / Glob / Grep | Reads Specialist preliminary artifacts (all of them in default mode; one in paired-critic mode). Produces adversarial critique per Specialist: (1) weakest assumption, (2) alternative framing, (3) missed edge case. Scope limited to Open Decisions — may NOT attack Confirmed Decisions. Sends critique to Planner for integration. Returns text only. |
+| **Planner** | Read / Glob / Grep | Coordinates Specialists + Challenger: assigns initial roles, collects preliminary artifacts, relays artifacts to Challenger, collects critiques, integrates peer summaries + critique into a single coherence-check message per Specialist, collects refined artifacts, composes into a unified draft (records Challenger-rejected alternatives inline; uses Confirmed Decisions as tiebreaker for cross-domain conflicts), sends to Lead. Never writes files. |
 | **Scribe** | Write / Read | Writes design doc + `.review.md`. Only file-writer on the team. |
 | **Content Reviewer** | Read | 3 axes: Specification Productivity, Rationale Presence, Decision Maturity. |
 | **Structure Reviewer** | Read | 3 axes: Specialist Coherence, Constraint Quality, CLAUDE.md Alignment. |
@@ -97,28 +111,31 @@ sequenceDiagram
     participant U as User
     participant L as Lead
     participant SD as Specialist×N
+    participant CH as Challenger
     participant P as Planner
     participant S as Scribe
     participant CR as Content R.
     participant SR as Structure R.
 
-    U->>L: /sketch-team [task]
+    U->>L: /sketch-team [-c] [task]
     L->>U: vibe-design Step 0.5-1.5 dialogue
     U->>L: locked decisions
-    L->>L: Scope Check, decide specialist roster (1-3 roles), TeamCreate, spawn all
+    L->>L: Scope Check, decide specialist roster + critic mode, TeamCreate, spawn all
 
     loop Round N
-        L->>P: task + decisions + roster (+ revision feedback if N>1)
+        L->>P: task + decisions + roster + critic mode (+ revision feedback if N>1)
         par to each Specialist
             P->>SD: role label + decisions
             SD->>P: preliminary artifact
         end
-        P->>P: build per-peer summaries (cross-domain check)
+        P->>CH: all preliminary artifacts
+        CH->>P: per-specialist critique (weakest assumption / alternative / edge case)
+        P->>P: integrate peer summaries + critique per specialist
         par to each Specialist
-            P->>SD: peer summaries + coherence-check
-            SD->>P: refined artifact
+            P->>SD: peer summary + critique + coherence-check
+            SD->>P: refined artifact (responds to critique — adjust or reject with reason)
         end
-        P->>L: composed draft text
+        P->>L: composed draft text (with inline "Alternative considered: X — rejected because Y")
         L->>S: write to output_path
         par
             L->>CR: review doc (3 axes)

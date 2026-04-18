@@ -49,7 +49,8 @@ Produce **concrete multi-domain designs** via Agent Teams. Where `/sketch` (vibe
 Lead holds the user dialogue (vibe-design Step 0.5–1.5), picks 1–3 **Specialist Designers** based on the task's natural domain decomposition (e.g., `data-model`, `api-surface`, `protocol`), then the team runs autonomously:
 
 - **Specialist roster, Lead-decided per task**: not "approaches" to the same problem — each Designer is the team's expert in one domain
-- **Two-pass coherence**: preliminary domain artifacts → cross-domain coherence check → refined artifacts → composition (not selection)
+- **Challenger — adversarial critique during design** (not only post-hoc review): reads preliminary Specialist artifacts and produces a critique per domain — weakest assumption / alternative framing / missed edge case. Default: one Challenger covers all. With `-c`: one Challenger per Specialist (deeper per-domain scrutiny).
+- **Two-pass coherence**: preliminary domain artifacts → Planner integrates peer summary + Challenger critique → refined artifacts → composition (not selection). Rejected Challenger alternatives surface inline as `Alternative considered: X — rejected because Y`.
 - **Single writer (Scribe)**: design.md and .review.md — clean role boundaries, no file conflicts
 - **Concretion-friendly 6-axis rubric**: Specification Productivity / Rationale Presence / Decision Maturity / Specialist Coherence / Constraint Quality / CLAUDE.md Alignment. Allows load-bearing concrete artifacts (signatures, schemas, sequence diagrams) but rejects decorative pseudocode
 - **Strict verdict + max_rounds cap**: any axis FAIL → NEEDS_REVISION; cap default 3; escalate to user if hit
@@ -66,6 +67,7 @@ Lead holds the user dialogue (vibe-design Step 0.5–1.5), picks 1–3 **Special
 ```
 > /sketch-team design a job queue that handles retries and priorities
 > /sketch-team -n 5 architect multi-tenant data isolation
+> /sketch-team -c design a distributed cache invalidation protocol   # per-specialist critics
 > /sketch-team -o docs/features/notifications.md design the notification system
 ```
 

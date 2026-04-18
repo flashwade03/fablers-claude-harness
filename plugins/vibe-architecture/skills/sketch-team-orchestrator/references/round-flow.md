@@ -30,6 +30,8 @@ SendMessage(
 Task: [TASK_DESCRIPTION]
 Target document: [DOCUMENT_PATH]
 Specialist roster: [specialist-[ROLE_1] (one-line role description), specialist-[ROLE_2] (one-line role description), ...]
+Critic mode: [single | per-specialist]
+Challenger roster: [challenger]  or  [challenger-[ROLE_1], challenger-[ROLE_2], ...]
 
 --- DECISION SHEET ---
 ## Confirmed Decisions
@@ -46,10 +48,19 @@ Action: [create new | update existing]
 Instructions:
 1. Send each Specialist their role label + role description and the decision sheet — ask each for a preliminary domain artifact
 2. Collect preliminary artifacts from all Specialists — wait until all have reported
-3. Coherence-check (only when count ≥ 2): build a per-Specialist summary of peer artifacts AND a list of cross-domain conflicts you observed, then send with a coherence-check prompt — ask each Specialist to revise to compose with peers OR push back if their domain's correctness requires peers to change
-4. Collect refined artifacts from all Specialists
-5. Compose the refined artifacts into a unified draft that honours Confirmed Decisions and resolves Open Decisions, with concrete artifacts from each Specialist appearing in their natural section (Data Models, Interfaces, Sequence Diagrams, etc.)
-6. Send the composed draft text to 'team-lead' via SendMessage",
+3. Route preliminary artifacts to Challenger(s):
+   - If critic_mode = single: send ALL preliminary artifacts to 'challenger' in one message for cross-cutting critique (per-specialist breakdown)
+   - If critic_mode = per-specialist: send each Specialist's artifact to its paired 'challenger-[ROLE]' for domain-focused critique
+4. Collect critique(s) from Challenger(s) — each names (a) weakest assumption, (b) alternative framing, (c) missed edge case per Specialist
+5. Coherence state: note cross-domain conflicts between Specialists (type mismatches, ordering disagreements) — only applies when count ≥ 2
+6. Send ONE integrated message per Specialist: peer summary (if count ≥ 2) + cross-domain conflicts + Challenger critique + instruction to adjust OR reject with 1-line reason
+7. Collect refined artifacts from all Specialists — each refines to address critique/peers, either adopting or rejecting-with-reason
+8. Compose the refined artifacts into a unified draft that:
+   - Honours Confirmed Decisions (non-negotiable)
+   - Includes concrete artifacts from each Specialist in their natural sections (Data Models, Interfaces, Sequence Diagrams, etc.)
+   - Records every rejected-with-reason Challenger alternative inline as 'Alternative considered: X — rejected because Y' next to the winning decision
+   - Surfaces any [OPEN QUESTION FOR USER] from Challenger(s) in an 'Open Questions for User' section
+9. Send the composed draft text to 'team-lead' via SendMessage",
   summary: "Round 1 design"
 )
 ```
