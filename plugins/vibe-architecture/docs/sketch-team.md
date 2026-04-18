@@ -27,15 +27,18 @@ Produce a **concrete, multi-domain design document** by combining specialist Des
 
 - **Scribe is the single writer** — writes `[design].md` and `[design].review.md`. Because: damascus pattern; single writer = no file conflicts; consistent formatting.
 
-- **Concretion-friendly 6-axis rubric (replaces vibe-design's anti-pseudocode rubric)**:
+- **Concretion-friendly 7-axis rubric (replaces vibe-design's anti-pseudocode rubric)**:
   1. **Specification Productivity** — concrete artifacts (signatures, schemas, sequence diagrams) must be **load-bearing**: they pin down a decision that prose alone can't. Decorative pseudocode (translating English into code-shaped text without adding decision content) → FAIL.
   2. **Rationale Presence** — every decision and every concrete spec choice has a `because …` clause.
   3. **Decision Maturity** — confirmed decisions and candidate items are clearly separated; candidates have no rationale.
-  4. **Specialist Coherence** — domain artifacts compose without contradiction (e.g., the data model's `id: UUID` and the API spec's `id: integer` is FAIL).
-  5. **Constraint Quality** — constraints express boundaries (must / must not), not implementation noise. Concrete spec is allowed when it *is* the constraint (e.g., "must accept ISO-8601 UTC timestamps").
-  6. **CLAUDE.md Alignment** — design doc is referenced from CLAUDE.md, not duplicated.
+  4. **Failure Coverage** — critical failure modes on the design's primary paths are enumerated, each with a handling decision (retry / fallback / fail-loud / degraded / etc.). Intentional non-coverage is explicit. Hand-waving ("we'll handle errors") → FAIL. Designs with no inherent failure-bearing paths (pure format specs, schema-only docs) auto-PASS.
+  5. **Specialist Coherence** — domain artifacts compose without contradiction (e.g., the data model's `id: UUID` and the API spec's `id: integer` is FAIL).
+  6. **Constraint Quality** — constraints express boundaries (must / must not), not implementation noise. Concrete spec is allowed when it *is* the constraint (e.g., "must accept ISO-8601 UTC timestamps").
+  7. **CLAUDE.md Alignment** — design doc is referenced from CLAUDE.md, not duplicated.
   
-  Because: vibe-design's "Decision Purity" axis is anti-concrete — it would reject the very output we want sketch-team to produce. Replacing it with **Specification Productivity** keeps the discipline (no decorative pseudocode) while allowing load-bearing concrete artifacts. **Specialist Coherence** replaces vibe-design's "Context Budget" because the new failure mode in concrete multi-domain design is cross-domain contradiction, not length.
+  Because: vibe-design's "Decision Purity" axis is anti-concrete — it would reject the very output we want sketch-team to produce. Replacing it with **Specification Productivity** keeps the discipline (no decorative pseudocode) while allowing load-bearing concrete artifacts. **Specialist Coherence** replaces vibe-design's "Context Budget" because the new failure mode in concrete multi-domain design is cross-domain contradiction, not length. **Failure Coverage** is added because post-Challenger removal left a gap where design-phase missed-edge-case surfacing no longer happens — the Reviewer now checks (rubric-style, not generatively) whether the design explicitly specified its failure modes.
+
+  Axis ownership: Content Reviewer owns Spec Productivity / Rationale Presence / Decision Maturity / Failure Coverage (4). Structure Reviewer owns Specialist Coherence / Constraint Quality / CLAUDE.md Alignment (3). The 4/3 split is deliberate — Content Reviewer's axes are all about what's IN the doc; Failure Coverage fits there.
 
 - **Strict rubric verdict with max_rounds cap** — any axis FAIL → NEEDS_REVISION; cap at `max_rounds` (default 3); escalate to user if cap hit. Because: same anti-patterns.md insight — persistent FAILs indicate fundamentally wrong design, not insufficient iteration.
 

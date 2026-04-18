@@ -51,7 +51,7 @@ Lead holds the user dialogue (vibe-design Step 0.5–1.5), picks 1–3 **Special
 - **Specialist roster, Lead-decided per task**: not "approaches" to the same problem — each Designer is the team's expert in one domain
 - **Two-pass coherence**: preliminary domain artifacts → Planner builds peer summary + cross-domain conflicts → refined artifacts → composition. Rejected alternatives Specialists considered surface inline as `Alternative considered: X — rejected because Y`.
 - **Single writer (Scribe)**: design.md and .review.md — clean role boundaries, no file conflicts
-- **Concretion-friendly 6-axis rubric**: Specification Productivity / Rationale Presence / Decision Maturity / Specialist Coherence / Constraint Quality / CLAUDE.md Alignment. Allows load-bearing concrete artifacts (signatures, schemas, sequence diagrams) but rejects decorative pseudocode
+- **Concretion-friendly 7-axis rubric**: Specification Productivity / Rationale Presence / Decision Maturity / Failure Coverage / Specialist Coherence / Constraint Quality / CLAUDE.md Alignment. Allows load-bearing concrete artifacts (signatures, schemas, sequence diagrams) but rejects decorative pseudocode. Failure Coverage checks that critical failure modes are explicitly named with handling decisions.
 - **Strict verdict + max_rounds cap**: any axis FAIL → NEEDS_REVISION; cap default 3; escalate to user if hit
 
 **Requires** `.claude/settings.json` with:

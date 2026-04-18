@@ -131,11 +131,12 @@ Document: [DOCUMENT_PATH]
 
 Instructions:
 1. Read the document at [DOCUMENT_PATH]
-2. Evaluate 3 axes with PASS / WARN / FAIL for each:
+2. Evaluate 4 axes with PASS / WARN / FAIL for each:
    - Specification Productivity — Concrete artifacts (signatures, schemas, sequence diagrams, code blocks) must be load-bearing (pin down a decision prose alone wouldn't). Decorative pseudocode that just translates English to code-shaped text without adding decision content → FAIL.
    - Rationale Presence — Every confirmed decision AND every concrete spec choice has a 'because …' clause. Candidate items in 'v0 이후 검토 방향' stay without rationale.
    - Decision Maturity — Confirmed decisions and candidate items are structurally separated; confirmed has because, candidate does not.
-3. For each axis, include a brief explanation + concrete line references; for Specification Productivity FAIL, name the decorative artifacts.
+   - Failure Coverage — Critical failure modes on the design's primary paths are enumerated, each with a handling decision (retry / fallback / fail-loud / degraded / etc.). Intentional non-coverage is explicit. Hand-waving ('we'll handle errors' without naming what errors) → FAIL. If the design has no inherent failure-bearing paths (pure data format spec, schema-only doc), mark this axis PASS with note 'no critical paths'.
+3. For each axis, include a brief explanation + concrete line references; for Specification Productivity FAIL, name the decorative artifacts; for Failure Coverage FAIL, name the unspecified failure modes.
 4. Return a structured verdict (below) to 'team-lead' (use EXACTLY recipient: 'team-lead')
 
 Verdict format:
@@ -143,7 +144,8 @@ Verdict format:
 |------|---------|-------|
 | Specification Productivity | PASS/WARN/FAIL | ... |
 | Rationale Presence | PASS/WARN/FAIL | ... |
-| Decision Maturity | PASS/WARN/FAIL | ... |",
+| Decision Maturity | PASS/WARN/FAIL | ... |
+| Failure Coverage | PASS/WARN/FAIL | ... |",
   summary: "Content review round [N]"
 )
 ```

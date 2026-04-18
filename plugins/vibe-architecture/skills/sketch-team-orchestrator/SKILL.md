@@ -225,15 +225,16 @@ For detailed step-by-step procedures and exact SendMessage payloads for each pha
 
 ## Verdict Rule
 
-- **APPROVED** if all 6 axes are PASS or WARN (across both reviewers).
+- **APPROVED** if all 7 axes are PASS or WARN (across both reviewers).
 - **NEEDS_REVISION** if any single axis returns FAIL from any reviewer.
 
 Axis ownership (concretion-friendly rubric — replaces vibe-design's anti-pseudocode rubric):
-- `reviewer-content` covers:
+- `reviewer-content` covers (4 axes):
   - **Specification Productivity** — concrete artifacts (signatures, schemas, sequence diagrams) must be load-bearing; decorative pseudocode = FAIL
   - **Rationale Presence** — every decision and every concrete spec choice has a `because …` clause
   - **Decision Maturity** — confirmed decisions and candidate items clearly separated; candidates have no rationale
-- `reviewer-structure` covers:
+  - **Failure Coverage** — critical failure modes on primary paths enumerated with handling decisions (retry / fallback / fail-loud / degraded / etc.); intentional non-coverage explicit; hand-waving → FAIL. Designs with no inherent failure-bearing paths (pure format specs, schema-only docs) auto-PASS.
+- `reviewer-structure` covers (3 axes):
   - **Specialist Coherence** — domain artifacts compose without contradiction (data model and API spec agree on types, etc.)
   - **Constraint Quality** — boundaries, not implementation noise; concrete spec OK when it *is* the constraint
   - **CLAUDE.md Alignment** — design doc referenced from CLAUDE.md, not duplicated
