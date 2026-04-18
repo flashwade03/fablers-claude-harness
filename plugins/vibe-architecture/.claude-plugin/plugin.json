@@ -1,7 +1,7 @@
 {
   "name": "vibe-architecture",
-  "description": "Vibe coding design methodology — structured design, 6-axis review scoring, Agent Teams concrete-design workflow with adversarial critique, and session skill extraction",
-  "version": "0.8.0",
+  "description": "Vibe coding design methodology — structured design, 6-axis review scoring, Agent Teams concrete-design workflow, and session skill extraction",
+  "version": "0.8.1",
   "author": {
     "name": "flashwade03"
   }
