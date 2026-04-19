@@ -1,6 +1,20 @@
+<div align="center">
+
 # vibe-architecture
 
-Vibe coding design methodology — structured design, 6-axis review scoring, Agent Teams design+review bundle, and session skill extraction.
+**Decide first. Let AI implement.**
+
+Vibe coding design methodology wrapped as Claude Code skills — turn rough ideas into structured specs (decisions, constraints, milestones, *never* pseudocode), score them with a 6-axis rubric, and scale to multi-domain concrete design via Agent Teams when the abstract spec alone isn't enough. Also extracts reusable patterns from your sessions back into skills.
+
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet?style=for-the-badge)](https://claude.ai)
+[![Version](https://img.shields.io/badge/version-0.8.3-blue?style=for-the-badge)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](../../LICENSE)
+
+[English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
+
+</div>
+
+---
 
 ## Skills
 
@@ -42,7 +56,7 @@ Any single FAIL caps the grade at C.
 > design quality check
 ```
 
-### sketch-team-orchestrator
+### sketch-team
 
 Produce **concrete multi-domain designs** via Agent Teams. Where `/sketch` (vibe-design alone) keeps decisions abstract for AI to fill in later, `/sketch-team` deliberately concretises — interfaces, data shapes, sequence diagrams — because in some domains the concrete artifact *is* the decision (API contracts, message protocols, data models with cascading types).
 

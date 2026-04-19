@@ -1,10 +1,10 @@
 ---
-name: search
+name: rag-search
 description: Run a direct hybrid search against the RAG index and return raw results.
 argument-hint: "<query>"
 ---
 
-# /search Command
+# /rag-search Command
 
 Run a direct hybrid search (vector + BM25) against the indexed document.
 

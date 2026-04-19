@@ -137,8 +137,8 @@ See [docs/v4-comparison/](docs/v4-comparison/) for a side-by-side quality compar
 
 ```bash
 # Add marketplace and install
-/plugin marketplace add flashwade03/Damascus-For-Claude-Code
-/plugin install damascus@planner
+/plugin marketplace add flashwade03/fablers-claude-plugins
+/plugin install damascus@fablers
 ```
 
 On the first session, Damascus automatically creates `.claude/damascus.local.md` in your project directory. Fill in your API keys there to enable external reviewers.
@@ -249,9 +249,9 @@ damascus/
 │   ├── author.md             # Document authoring agent
 │   └── claude-reviewer.md    # Claude review agent
 ├── skills/
-│   ├── forge-orchestrator/    # Sequential workflow orchestration
-│   ├── forge-team-orchestrator/ # Agent Teams workflow orchestration
-│   └── agent-teams-debugger/   # Diagnostics for stuck forge-team sessions
+│   ├── forge-sequential/      # Sequential workflow orchestration
+│   ├── forge-team/            # Agent Teams workflow orchestration
+│   └── forge-team-debugger/   # Diagnostics for stuck forge-team sessions
 ├── scripts/
 │   ├── gemini-review.ts      # Gemini API integration
 │   ├── openai-review.ts      # OpenAI API integration
@@ -267,9 +267,10 @@ damascus/
 
 ## Changelog
 
+- **4.0.5** — Rename skills for clarity: `forge-orchestrator` → `forge-sequential`, `forge-team-orchestrator` → `forge-team`, `agent-teams-debugger` → `forge-team-debugger`. No user-facing API change; commands and behavior are unchanged.
 - **4.0.4** — Narrow skill descriptions to command-specific triggers, fix forge-team command to match Explorer + Single Planner architecture
 - **4.0.3** — Fix skill YAML frontmatter: kebab-case names, quote descriptions to prevent parse errors
-- **4.0.2** — forge-team-orchestrator skill description optimized for clarity and negative-case filtering
+- **4.0.2** — forge-team skill description optimized for clarity and negative-case filtering
 - **4.0.1** — Fix explorer cross-pollination (planner-mediated) and conditional reviewer spawning (only enabled reviewers are spawned)
 - **4.0.0** — Agent Teams mode (`/forge-team`): parallel explorers + dedicated planner + scribe + independent reviewers as live teammates. Full context preserved across rounds without resume. [v3 vs v4 comparison](docs/v4-comparison/)
 - **3.3.0** — Agent resume across iterations (preserves codebase context), remove writer agent, foreground parallel reviews, review history compression, `--mode` plan/doc for all reviewers, session ID fallback

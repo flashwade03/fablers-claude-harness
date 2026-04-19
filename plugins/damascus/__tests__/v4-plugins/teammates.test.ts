@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
-const PROMPTS_FILE = join(ROOT, 'skills/forge-team-orchestrator/references/teammate-prompts.md')
+const PROMPTS_FILE = join(ROOT, 'skills/forge-team/references/teammate-prompts.md')
 const content = readFileSync(PROMPTS_FILE, 'utf-8')
 
 // Known role section names (outer ## headers in teammate-prompts.md)

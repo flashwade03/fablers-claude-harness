@@ -8,7 +8,7 @@ A Claude Code plugin marketplace packaging battle-tested workflows into reusable
 Design methodology, document forging, and agentic RAG — all in one place.
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.9.1-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,7 +27,7 @@ Encodes proven design methodologies into skills that Claude loads on demand. No 
 |-------|-------------|
 | **vibe-design** | Turn rough ideas into just-enough design specs. Decisions + Constraints + Milestones, never pseudocode. |
 | **design-review** | Score design docs against 6 axes (S~F grade, 0-100 score). Any FAIL caps the grade at C. |
-| **sketch-team-orchestrator** | Agent Teams workflow for **concrete multi-domain design**: 1–3 Specialist Designers (data-model / api-surface / protocol / etc., Lead-decided) produce concrete artifacts with inline rejected alternatives, Planner composes with cross-domain coherence checks, 2 Reviewers judge against a concretion-friendly 6-axis rubric, loop until approved. |
+| **sketch-team** | Agent Teams workflow for **concrete multi-domain design**: 1–3 Specialist Designers (data-model / api-surface / protocol / etc., Lead-decided) produce concrete artifacts with inline rejected alternatives, Planner composes with cross-domain coherence checks, 2 Reviewers judge against a concretion-friendly 6-axis rubric, loop until approved. |
 | **session-skill-extractor** | Analyze conversations to extract reusable patterns. Routes findings to skills, CLAUDE.md, hookify, or memory. |
 
 ```
@@ -60,8 +60,23 @@ Agentic RAG pipeline — query analysis, hybrid retrieval (vector + BM25), CRAG 
 
 ```
 > /ingest <file>                   # Index a document
-> /ask <question>                  # Query with citations
-> /search <query>                  # Raw retrieval
+> /rag-ask <question>              # Query with citations
+> /rag-search <query>              # Raw retrieval
+```
+
+---
+
+### `grimoire` — General-purpose reusable skills
+
+Not a single-purpose plugin. A growing collection of Claude Code skills that aren't tied to any one command or workflow — the kind Claude should pull out whenever the situation calls for them, regardless of which other plugin is active. Named `grimoire` because it's a book of reusable patterns; the description you're reading compensates for the metaphor.
+
+| Skill | What it does |
+|-------|-------------|
+| **agent-teams** | Run *real* Claude Code agent teams (TeamCreate + SendMessage) for debates, reviews, and implementation — instead of letting a single agent role-play multiple personas. Includes cross-challenge patterns, worked examples, and explicit scope boundaries against `/forge-team`. |
+
+```
+> 에이전트 팀 만들어줘               # Spawn a real agent team
+> debate with agent teams          # Structured cross-agent debate
 ```
 
 ---
@@ -76,6 +91,7 @@ Agentic RAG pipeline — query analysis, hybrid retrieval (vector + BM25), CRAG 
 /plugin install vibe-architecture@fablers
 /plugin install damascus@fablers
 /plugin install fablers-agentic-rag@fablers
+/plugin install grimoire@fablers
 ```
 
 ---
@@ -83,7 +99,7 @@ Agentic RAG pipeline — query analysis, hybrid retrieval (vector + BM25), CRAG 
 ## Project Structure
 
 ```
-fablers/
+my-claude-harness/
 ├── .claude-plugin/
 │   └── marketplace.json
 ├── plugins/
@@ -101,13 +117,17 @@ fablers/
 │   │   ├── hooks/
 │   │   ├── scripts/
 │   │   └── skills/
-│   └── fablers-agentic-rag/            # Agentic RAG
+│   ├── fablers-agentic-rag/            # Agentic RAG
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   ├── hooks/
+│   │   ├── scripts/
+│   │   └── skills/
+│   └── grimoire/                       # General-purpose reusable skills
 │       ├── .claude-plugin/plugin.json
-│       ├── agents/
-│       ├── commands/
-│       ├── hooks/
-│       ├── scripts/
 │       └── skills/
+│           └── agent-teams/
 ```
 
 ---

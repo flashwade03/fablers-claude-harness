@@ -37,11 +37,11 @@ describe('forge-team.md frontmatter', () => {
   })
 })
 
-describe('forge-team-orchestrator SKILL.md frontmatter', () => {
-  const fm = parseFrontmatter('skills/forge-team-orchestrator/SKILL.md')
+describe('forge-team SKILL.md frontmatter', () => {
+  const fm = parseFrontmatter('skills/forge-team/SKILL.md')
 
   it('has name field', () => {
-    expect(fm.name).toBe('forge-team-orchestrator')
+    expect(fm.name).toBe('forge-team')
   })
 
   it('has non-empty description', () => {

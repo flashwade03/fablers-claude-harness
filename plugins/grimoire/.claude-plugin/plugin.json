@@ -1,0 +1,9 @@
+{
+  "name": "grimoire",
+  "description": "A grimoire of reusable Claude Code skills — orchestration patterns and behaviors you can invoke from any project, not tied to a specific command or workflow. Not a single-purpose plugin: a growing collection of general-purpose skills (currently: agent-teams orchestration).",
+  "version": "0.1.0",
+  "author": {
+    "name": "flashwade03"
+  },
+  "keywords": ["skills", "agent-teams", "orchestration", "general-purpose"]
+}

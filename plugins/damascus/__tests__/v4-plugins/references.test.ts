@@ -3,16 +3,16 @@ import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
-const V4_SKILL = join(ROOT, 'skills/forge-team-orchestrator/SKILL.md')
-const V4_ROUND_FLOW = join(ROOT, 'skills/forge-team-orchestrator/references/round-flow.md')
-const V4_TEAMMATE_PROMPTS = join(ROOT, 'skills/forge-team-orchestrator/references/teammate-prompts.md')
+const V4_SKILL = join(ROOT, 'skills/forge-team/SKILL.md')
+const V4_ROUND_FLOW = join(ROOT, 'skills/forge-team/references/round-flow.md')
+const V4_TEAMMATE_PROMPTS = join(ROOT, 'skills/forge-team/references/teammate-prompts.md')
 
 describe('v4 file structure', () => {
   const requiredFiles = [
     'commands/forge-team.md',
-    'skills/forge-team-orchestrator/SKILL.md',
-    'skills/forge-team-orchestrator/references/round-flow.md',
-    'skills/forge-team-orchestrator/references/teammate-prompts.md',
+    'skills/forge-team/SKILL.md',
+    'skills/forge-team/references/round-flow.md',
+    'skills/forge-team/references/teammate-prompts.md',
   ]
 
   for (const file of requiredFiles) {
@@ -47,7 +47,7 @@ describe('round-flow.md references', () => {
   })
 
   it('v3 review template exists', () => {
-    expect(existsSync(join(ROOT, 'skills/forge-orchestrator/references/review-template.md'))).toBe(true)
+    expect(existsSync(join(ROOT, 'skills/forge-sequential/references/review-template.md'))).toBe(true)
   })
 
   it('references review scripts', () => {
@@ -72,8 +72,8 @@ describe('round-flow.md references', () => {
 describe('forge-team.md references skill', () => {
   const content = readFileSync(join(ROOT, 'commands/forge-team.md'), 'utf-8')
 
-  it('points to forge-team-orchestrator skill', () => {
-    expect(content).toContain('forge-team-orchestrator')
+  it('points to forge-team skill', () => {
+    expect(content).toContain('forge-team')
   })
 })
 

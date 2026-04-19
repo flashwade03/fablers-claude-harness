@@ -28,8 +28,8 @@ cat ~/.claude/teams/damascus-forge/inboxes/lead.json | jq '[.[] | select(.read =
 
 ### Fix
 All SendMessage examples in prompts must use `recipient: "team-lead"`:
-- `skills/forge-team-orchestrator/references/teammate-prompts.md` — all reviewer prompts
-- `skills/forge-team-orchestrator/references/round-flow.md` — all message templates
+- `skills/forge-team/references/teammate-prompts.md` — all reviewer prompts
+- `skills/forge-team/references/round-flow.md` — all message templates
 
 ### Prevention
 Test `__tests__/v4-plugins/protocol.test.ts` validates that all `recipient:` values in prompts match valid teammate names.
@@ -188,7 +188,7 @@ Verify the scribe's metadata injection command matches the format in `round-flow
 ### Root Cause
 The Lead jumped directly to sending PLANNING PHASE to the planner without first spawning all required teammates (explorers, scribe, reviewers) during the Setup Phase. The planner's workflow requires an explorer list in the task message to assign investigation areas. Without explorers, it stalls.
 
-This can also manifest as a **malformed task message** — the Lead spawns teammates but sends an incomplete message that lacks the explorer list, mode, or ExitPlanMode reinforcement. Compare the actual message to the required format in `skills/forge-team-orchestrator/references/round-flow.md`.
+This can also manifest as a **malformed task message** — the Lead spawns teammates but sends an incomplete message that lacks the explorer list, mode, or ExitPlanMode reinforcement. Compare the actual message to the required format in `skills/forge-team/references/round-flow.md`.
 
 ### Diagnosis
 ```bash
@@ -204,10 +204,10 @@ cat ~/.claude/teams/damascus-forge/inboxes/planner.json | jq '.[0].content'
 ```
 
 ### Fix
-Delete team and restart. Ensure the Lead follows forge-team-orchestrator's Setup Phase:
+Delete team and restart. Ensure the Lead follows forge-team's Setup Phase:
 1. Spawn all teammates first (explorers, planner, scribe, reviewers)
 2. Use the structured task message format from round-flow.md
 3. Include explorer list and ExitPlanMode instruction in the planner message
 
 ### Prevention
-Verify the forge-team-orchestrator SKILL.md Setup Phase instructions are being followed. The Lead should never send Phase messages before all teammates are spawned.
+Verify the forge-team SKILL.md Setup Phase instructions are being followed. The Lead should never send Phase messages before all teammates are spawned.

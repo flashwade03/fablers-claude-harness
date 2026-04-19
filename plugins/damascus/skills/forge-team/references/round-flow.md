@@ -214,7 +214,7 @@ Verdict: [APPROVED | NEEDS_REVISION]
 [OPENAI_REVIEW_CONTENT]
 --- END ---
 
-Review file template reference: [PLUGIN_ROOT]/skills/forge-orchestrator/references/review-template.md
+Review file template reference: [PLUGIN_ROOT]/skills/forge-sequential/references/review-template.md
 
 Instructions:
 1. Read the review template reference for exact format

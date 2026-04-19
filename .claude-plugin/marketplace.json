@@ -5,15 +5,15 @@
     "name": "flashwade03"
   },
   "metadata": {
-    "description": "Fablers plugin collection — design methodology, document forging, and agentic RAG",
-    "version": "0.9.1"
+    "description": "Fablers plugin collection — design methodology, document forging, agentic RAG, and a grimoire of reusable skills",
+    "version": "0.10.0"
   },
   "plugins": [
     {
       "name": "vibe-architecture",
       "source": "./plugins/vibe-architecture",
       "description": "Vibe coding design methodology — structured design, 6-axis review scoring, Agent Teams concrete-design workflow, and session skill extraction",
-      "version": "0.8.2",
+      "version": "0.8.3",
       "author": {
         "name": "flashwade03"
       },
@@ -24,11 +24,11 @@
       "name": "damascus",
       "source": "./plugins/damascus",
       "description": "Forge documents through iterative multi-LLM review — like Damascus steel, stronger through repeated folding.",
-      "version": "4.0.4",
+      "version": "4.0.5",
       "author": {
         "name": "flashwade03"
       },
-      "repository": "https://github.com/flashwade03/Damascus-For-Claude-Code",
+      "repository": "https://github.com/flashwade03/fablers-claude-plugins",
       "license": "MIT",
       "keywords": ["forge", "review", "multi-llm", "planning", "documentation"],
       "category": "workflow"
@@ -37,12 +37,23 @@
       "name": "fablers-agentic-rag",
       "source": "./plugins/fablers-agentic-rag",
       "description": "Agentic RAG pipeline using Claude agents for query analysis, hybrid retrieval, evaluation, and answer synthesis with CRAG validation.",
-      "version": "2.0.1",
+      "version": "3.0.0",
       "author": {
         "name": "flashwade03"
       },
       "keywords": ["rag", "agentic", "document-qa", "retrieval", "hybrid-search"],
       "category": "research"
+    },
+    {
+      "name": "grimoire",
+      "source": "./plugins/grimoire",
+      "description": "A grimoire of reusable Claude Code skills — orchestration patterns and behaviors you can invoke from any project, not tied to a specific command. A growing collection, not a single-purpose plugin (currently: agent-teams orchestration).",
+      "version": "0.1.0",
+      "author": {
+        "name": "flashwade03"
+      },
+      "keywords": ["skills", "agent-teams", "orchestration", "general-purpose"],
+      "category": "workflow"
     }
   ]
 }

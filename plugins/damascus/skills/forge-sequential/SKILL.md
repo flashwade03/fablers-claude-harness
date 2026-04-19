@@ -1,9 +1,9 @@
 ---
-name: forge-orchestrator
-description: "Internal orchestration logic for /forge, /forge-plan, and /forge-doc commands. Do not trigger on general document writing or review questions — only when these commands are explicitly invoked."
+name: forge-sequential
+description: "Internal orchestration logic for /forge, /forge-plan, and /forge-doc commands (sequential single-author + multi-LLM review loop). Do not trigger on general document writing or review questions — only when these commands are explicitly invoked."
 ---
 
-# forge-orchestrator
+# forge-sequential
 
 Iteratively improve documents through a repeated refinement loop — draft, review in parallel by multiple LLMs, refine until approved.
 

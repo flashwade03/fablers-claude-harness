@@ -5,8 +5,8 @@ description: >
   Use this agent when you need to decompose, clarify, or rewrite a user question into effective search queries.
 
   <example>
-  Context: User asks a complex multi-part question via /ask
-  user: "/ask How does the elemental tetrad relate to game mechanics, and what lenses help evaluate each element?"
+  Context: User asks a complex multi-part question via /rag-ask
+  user: "/rag-ask How does the elemental tetrad relate to game mechanics, and what lenses help evaluate each element?"
   assistant: "This is a complex question with multiple sub-topics. I'll use the query-analyst to decompose it into concrete search queries."
   <commentary>
   Multi-part question with "each element" pattern requires decomposition into member-specific queries.

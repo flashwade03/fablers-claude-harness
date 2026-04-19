@@ -34,7 +34,7 @@ Examples:
 
 ---
 
-**Instructions:** Follow the `forge-orchestrator` skill to execute this workflow.
+**Instructions:** Follow the `forge-sequential` skill to execute this workflow.
 
 **Parse arguments:**
 - Extract `-n [number]` if present → `max_iterations` (default: 3)

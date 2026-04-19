@@ -1,9 +1,9 @@
 ---
-name: agent-teams-debugger
+name: forge-team-debugger
 description: "Diagnose and fix problems with Damascus /forge-team sessions. Only trigger when the user explicitly mentions forge-team or damascus-forge AND describes something stuck, broken, or needing debugging. Do not trigger on general agent teams questions or non-Damascus issues."
 ---
 
-# agent-teams-debugger
+# forge-team-debugger
 
 Diagnose and resolve issues in Damascus `/forge-team` Agent Teams sessions. This skill encodes hard-won debugging knowledge from real production failures.
 
@@ -85,9 +85,9 @@ ls ~/.claude/teams/damascus-forge/inboxes/
 # If only team-lead.json + planner.json exist → Setup Phase was skipped
 ```
 
-**Malformed task message** — even if teammates are spawned, the PLANNING PHASE message to the planner must include the explorer list, mode, and ExitPlanMode reinforcement. Compare the actual message against the format in `skills/forge-team-orchestrator/references/round-flow.md`.
+**Malformed task message** — even if teammates are spawned, the PLANNING PHASE message to the planner must include the explorer list, mode, and ExitPlanMode reinforcement. Compare the actual message against the format in `skills/forge-team/references/round-flow.md`.
 
-**Fix:** Delete team and restart. Verify the Lead follows forge-team-orchestrator's Setup Phase (spawn all teammates) before entering Round 1.
+**Fix:** Delete team and restart. Verify the Lead follows forge-team's Setup Phase (spawn all teammates) before entering Round 1.
 
 ### Message Routing
 
@@ -104,7 +104,7 @@ ls ~/.claude/teams/damascus-forge/inboxes/lead.json
 cat ~/.claude/teams/damascus-forge/inboxes/lead.json | jq 'length'
 ```
 
-**Fix:** All teammate prompts must use `recipient: "team-lead"` (not `"lead"`). Check `skills/forge-team-orchestrator/references/teammate-prompts.md` — every SendMessage example must specify `recipient: "team-lead"`.
+**Fix:** All teammate prompts must use `recipient: "team-lead"` (not `"lead"`). Check `skills/forge-team/references/teammate-prompts.md` — every SendMessage example must specify `recipient: "team-lead"`.
 
 ### ExitPlanMode Failures
 

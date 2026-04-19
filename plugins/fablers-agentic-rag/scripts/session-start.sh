@@ -8,7 +8,7 @@ SETTINGS_FILE="$PROJECT_DIR/.claude/fablers-agentic-rag.local.md"
 TEMPLATE_FILE="$PLUGIN_ROOT/fablers-rag.template.md"
 
 # Check plugin installation
-if [ ! -f "$PLUGIN_ROOT/commands/ask.md" ] || [ ! -f "$PLUGIN_ROOT/skills/ask/SKILL.md" ]; then
+if [ ! -f "$PLUGIN_ROOT/commands/rag-ask.md" ] || [ ! -f "$PLUGIN_ROOT/skills/ask/SKILL.md" ]; then
   echo '{"continue": true, "systemMessage": "[fablers-agentic-rag] Warning: Plugin files incomplete."}'
   exit 0
 fi

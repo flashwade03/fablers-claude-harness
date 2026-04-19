@@ -4,7 +4,7 @@ set -euo pipefail
 
 DEV_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 INSTALLED_PLUGINS="$HOME/.claude/plugins/installed_plugins.json"
-PLUGIN_ID="damascus@planner"
+PLUGIN_ID="damascus@fablers"
 
 # Colors
 RED='\033[0;31m'
@@ -27,7 +27,7 @@ get_install_path() {
     echo ""
     return
   fi
-  # Extract installPath for damascus@planner (first entry)
+  # Extract installPath for damascus@fablers (first entry)
   node -e "
     const data = JSON.parse(require('fs').readFileSync('$INSTALLED_PLUGINS', 'utf-8'));
     const entries = data.plugins?.['$PLUGIN_ID'] || [];
@@ -41,7 +41,7 @@ do_status() {
 
   if [ -z "$install_path" ]; then
     echo -e "${RED}Damascus plugin not installed.${NC}"
-    echo "Install it first: claude plugin install damascus@planner"
+    echo "Install it first: claude plugin install damascus@fablers"
     exit 1
   fi
 
@@ -137,7 +137,7 @@ do_disable() {
     echo -e "${GREEN}Dev mode disabled. Original plugin restored.${NC}"
   else
     echo -e "${YELLOW}Symlink removed but no backup found.${NC}"
-    echo "You may need to reinstall: claude plugin install damascus@planner"
+    echo "You may need to reinstall: claude plugin install damascus@fablers"
   fi
 
   echo ""

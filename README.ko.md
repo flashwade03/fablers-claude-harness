@@ -8,7 +8,7 @@
 설계 방법론, 문서 단조, 에이전틱 RAG — 한 곳에서.
 
 [![Claude Code Marketplace](https://img.shields.io/badge/Claude_Code-Marketplace-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-0.9.1-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-0.10.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -27,7 +27,7 @@
 |------|--------|
 | **vibe-design** | 러프한 아이디어를 딱 필요한 만큼의 설계로. 결정 + 제약 + 마일스톤, 절대 의사코드 아님. |
 | **design-review** | 6축 평가로 설계 문서 점수 매기기 (S~F 등급, 0-100점). FAIL 1개면 등급 C 제한. |
-| **sketch-team-orchestrator** | Agent Teams 워크플로우로 **구체적 멀티-도메인 설계**: Specialist Designer 1–3명 (data-model / api-surface / protocol 등, Lead가 task별 결정)이 기각된 대안 인라인 기록 포함 구체 artifact 생산, Planner가 cross-domain 일관성 체크 후 합성, Reviewer 2명이 구체화-친화 6축 rubric으로 판정, 승인까지 루프. |
+| **sketch-team** | Agent Teams 워크플로우로 **구체적 멀티-도메인 설계**: Specialist Designer 1–3명 (data-model / api-surface / protocol 등, Lead가 task별 결정)이 기각된 대안 인라인 기록 포함 구체 artifact 생산, Planner가 cross-domain 일관성 체크 후 합성, Reviewer 2명이 구체화-친화 6축 rubric으로 판정, 승인까지 루프. |
 | **session-skill-extractor** | 대화를 분석해서 재사용 가능한 패턴 추출. 스킬, CLAUDE.md, hookify, memory로 라우팅. |
 
 ```
@@ -60,8 +60,23 @@
 
 ```
 > /ingest <파일>                   # 문서 인덱싱
-> /ask <질문>                      # 인용 포함 질의
-> /search <쿼리>                   # 원시 검색
+> /rag-ask <질문>                  # 인용 포함 질의
+> /rag-search <쿼리>               # 원시 검색
+```
+
+---
+
+### `grimoire` — 범용 재사용 스킬 모음집
+
+단일 목적 플러그인이 아님. 특정 커맨드·워크플로우에 묶이지 않는 Claude Code 스킬 모음 — 어떤 플러그인이 켜져 있든 상황에 따라 Claude가 알아서 꺼내 쓰는 패턴들입니다. `grimoire`라는 이름은 "재사용 가능한 패턴의 책"이라는 메타포이며, 지금 읽고 계신 이 설명이 그 메타포의 불친절함을 보완합니다.
+
+| 스킬 | 하는 일 |
+|------|--------|
+| **agent-teams** | 단일 에이전트가 여러 페르소나를 연기하는 "가짜 팀" 대신, 진짜 Claude Code agent team (TeamCreate + SendMessage)을 띄워 debate / review / implementation 수행. cross-challenge 프롬프트 패턴, worked example, `/forge-team`과의 경계 명시 포함. |
+
+```
+> 에이전트 팀 만들어줘               # 진짜 에이전트 팀 스폰
+> 팀으로 토론해줘                   # 구조화된 cross-agent debate
 ```
 
 ---
@@ -76,6 +91,7 @@
 /plugin install vibe-architecture@fablers
 /plugin install damascus@fablers
 /plugin install fablers-agentic-rag@fablers
+/plugin install grimoire@fablers
 ```
 
 ---
@@ -83,7 +99,7 @@
 ## 프로젝트 구조
 
 ```
-fablers/
+my-claude-harness/
 ├── .claude-plugin/
 │   └── marketplace.json
 ├── plugins/
@@ -101,13 +117,17 @@ fablers/
 │   │   ├── hooks/
 │   │   ├── scripts/
 │   │   └── skills/
-│   └── fablers-agentic-rag/            # 에이전틱 RAG
+│   ├── fablers-agentic-rag/            # 에이전틱 RAG
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   ├── hooks/
+│   │   ├── scripts/
+│   │   └── skills/
+│   └── grimoire/                       # 범용 재사용 스킬 모음집
 │       ├── .claude-plugin/plugin.json
-│       ├── agents/
-│       ├── commands/
-│       ├── hooks/
-│       ├── scripts/
 │       └── skills/
+│           └── agent-teams/
 ```
 
 ---

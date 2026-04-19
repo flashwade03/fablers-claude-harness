@@ -7,7 +7,7 @@
 A Claude Code plugin that runs an agentic RAG pipeline — query analysis, hybrid retrieval, evaluation with CRAG validation, and cited answer synthesis — all orchestrated by Claude agents. Supports PDF, plain text, and Markdown.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-blueviolet?style=for-the-badge)](https://claude.ai)
-[![Version](https://img.shields.io/badge/version-2.0.1-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md)
@@ -74,11 +74,23 @@ numpy arrays + in-memory BM25 — no vector DB, no server, no Docker. If your da
 
 ---
 
-## What's new in v2.0.0
+## What's new
+
+### v3.0.0 — Command rename (breaking)
+
+Commands have been renamed to avoid namespace collisions with other plugins in the marketplace:
+
+- `/ask <question>` → `/rag-ask <question>`
+- `/search <query>` → `/rag-search <query>`
+- `/ingest` is unchanged
+
+Update your usage accordingly if upgrading from v2.0.x.
+
+### v2.0.0
 
 - **Faster**: 3 agents instead of 5 — simple questions use only 1 agent call
 - **Simpler structure**: repo root = plugin (no nested `plugin/` directory)
-- **New commands**: `/search` for direct search, `/ingest` for document indexing
+- **New commands**: `/rag-search` for direct search, `/ingest` for document indexing
 - **Smarter routing**: complexity-based branching skips unnecessary agents
 
 ---
@@ -86,12 +98,12 @@ numpy arrays + in-memory BM25 — no vector DB, no server, no Docker. If your da
 ## How it works
 
 ```
-/ask How does the elemental tetrad relate to game mechanics?
+/rag-ask How does the elemental tetrad relate to game mechanics?
 ```
 
 **Simple questions** (1 agent call):
 ```
-You ── /ask ──▶ Skill generates 2 queries ──▶ search.py ──▶ Answer Synthesizer
+You ── /rag-ask ──▶ Skill generates 2 queries ──▶ search.py ──▶ Answer Synthesizer
                                                               │
                                                         Cited answer
                                                         with [Source N]
@@ -99,7 +111,7 @@ You ── /ask ──▶ Skill generates 2 queries ──▶ search.py ──�
 
 **Complex questions** (up to 3 agent calls):
 ```
-You ── /ask ──▶ Query Analyst ──▶ search.py ──▶ Evaluator ──▶ Answer Synthesizer
+You ── /rag-ask ──▶ Query Analyst ──▶ search.py ──▶ Evaluator ──▶ Answer Synthesizer
                   │                                │                │
              Decomposes into              Reranks + CRAG        Cited answer
              2-5 sub-queries              validation            with [Source N]
@@ -127,8 +139,8 @@ You ── /ask ──▶ Query Analyst ──▶ search.py ──▶ Evaluator 
 
 In Claude Code, add the marketplace and install:
 ```
-/plugin marketplace add flashwade03/fablers-rag
-/plugin install fablers-agentic-rag@flashwade03/fablers-rag
+/plugin marketplace add flashwade03/fablers-claude-plugins
+/plugin install fablers-agentic-rag@fablers
 ```
 
 ### 2. Prepare your data
@@ -156,14 +168,14 @@ openai_api_key: sk-...
 ### 4. Ask
 
 ```
-/ask What are the key concepts in chapter 3?
-/ask How does the author define the main framework, and what tools help evaluate each element?
+/rag-ask What are the key concepts in chapter 3?
+/rag-ask How does the author define the main framework, and what tools help evaluate each element?
 ```
 
 ### Other commands
 
 ```
-/search What is game design?        # Direct hybrid search, raw results
+/rag-search What is game design?    # Direct hybrid search, raw results
 /ingest /path/to/new-document.pdf   # Index a new document
 ```
 
@@ -172,17 +184,16 @@ openai_api_key: sk-...
 ## Project Structure
 
 ```
-fablers-rag/                          ← repo root = plugin
+fablers-agentic-rag/                  ← plugin root
 ├── .claude-plugin/
-│   ├── plugin.json                   # Plugin manifest (v2.0.1)
-│   └── marketplace.json              # Marketplace metadata
+│   └── plugin.json                   # Plugin manifest (v3.0.0)
 ├── agents/
 │   ├── query-analyst.md              # Query decomposition
 │   ├── evaluator.md                  # Reranking + CRAG validation
 │   └── answer-synthesizer.md         # Cited answer generation
 ├── commands/
-│   ├── ask.md                        # /ask command
-│   ├── search.md                     # /search command
+│   ├── rag-ask.md                    # /rag-ask command
+│   ├── rag-search.md                 # /rag-search command
 │   └── ingest.md                     # /ingest command
 ├── skills/
 │   └── ask/SKILL.md                  # Pipeline orchestration

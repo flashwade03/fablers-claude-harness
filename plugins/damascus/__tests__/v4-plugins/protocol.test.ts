@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..', '..')
-const SKILL = readFileSync(join(ROOT, 'skills/forge-team-orchestrator/SKILL.md'), 'utf-8')
-const ROUND_FLOW = readFileSync(join(ROOT, 'skills/forge-team-orchestrator/references/round-flow.md'), 'utf-8')
+const SKILL = readFileSync(join(ROOT, 'skills/forge-team/SKILL.md'), 'utf-8')
+const ROUND_FLOW = readFileSync(join(ROOT, 'skills/forge-team/references/round-flow.md'), 'utf-8')
 
 const VALID_TEAMMATES = [
   'planner',

@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A Claude Code plugin (v4.0.4) that forges documents through iterative multi-LLM review. Published on the Claude Code marketplace as `damascus@planner`.
+A Claude Code plugin (v4.0.4) that forges documents through iterative multi-LLM review. Published on the Claude Code marketplace as `damascus@fablers`.
 
 ## Project Structure
 
@@ -10,9 +10,9 @@ A Claude Code plugin (v4.0.4) that forges documents through iterative multi-LLM 
 .claude-plugin/plugin.json   # Plugin manifest (name, version, marketplace metadata)
 commands/                    # Slash commands (/forge, /forge-plan, /forge-doc, /forge-team)
 agents/                      # Subagent prompts (planner, author, claude-reviewer)
-skills/forge-orchestrator/    # v3 orchestration skill (SKILL.md + references/)
-skills/forge-team-orchestrator/  # v4 Agent Teams orchestration (SKILL.md + references/)
-skills/agent-teams-debugger/     # v4 debugging skill (diagnostic procedures + known failures)
+skills/forge-sequential/     # v3 sequential orchestration skill (SKILL.md + references/)
+skills/forge-team/           # v4 Agent Teams orchestration (SKILL.md + references/)
+skills/forge-team-debugger/  # v4 debugging skill (diagnostic procedures + known failures)
 scripts/                     # TypeScript/bash utilities
   api-clients.ts             # Extracted API call functions (Gemini, OpenAI) with dry-run/mock support
   gemini-review.ts           # Gemini review script (uses api-clients)
@@ -77,12 +77,12 @@ After `dev:enable`, restart Claude Code session for changes to take effect.
 - Agent Teams mode (`/forge-team`) with Explorer + single Planner architecture
 - Planner-mediated cross-pollination between explorers (v4.0.1)
 - Conditional reviewer spawning — only enabled reviewers are spawned (v4.0.1)
-- forge-team-orchestrator skill description optimized for clarity (v4.0.2)
+- forge-team skill description optimized for clarity (v4.0.2)
 - Fix skill frontmatter: kebab-case names, quote descriptions to prevent YAML parse errors (v4.0.3)
 - Narrow skill descriptions to command-specific triggers, fix forge-team command to match current architecture (v4.0.4)
 - Sequential mode (`/forge`, `/forge-plan`, `/forge-doc`) unchanged from v3
 - Three reviewer backends (Claude, Gemini, OpenAI)
-- agent-teams-debugger skill for diagnosing stuck sessions
+- forge-team-debugger skill for diagnosing stuck sessions
 
 ## Project Settings (.claude/settings.json)
 

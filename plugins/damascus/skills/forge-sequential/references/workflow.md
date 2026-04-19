@@ -82,7 +82,7 @@ This adds `created`, `modified`, and `session_id` fields.
 
 > **Note**: `CLAUDE_PLUGIN_ROOT` is provided by the Claude Code plugin system.
 > If it is not set in the Bash environment, use the path where this skill file resides
-> (strip `/skills/forge-orchestrator/SKILL.md` from this file's path).
+> (strip `/skills/forge-sequential/SKILL.md` from this file's path).
 
 ## Step 5: Collect Reviews (Parallel)
 

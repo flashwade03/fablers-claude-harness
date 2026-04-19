@@ -39,7 +39,7 @@ Examples:
 
 ---
 
-**Instructions:** Follow the `sketch-team-orchestrator` skill to execute this workflow.
+**Instructions:** Follow the `sketch-team` skill to execute this workflow.
 
 **Parse arguments:**
 - Extract `-n [number]` if present → `max_rounds` (default: 3)

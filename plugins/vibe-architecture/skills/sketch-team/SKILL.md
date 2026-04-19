@@ -1,9 +1,9 @@
 ---
-name: sketch-team-orchestrator
-description: "Internal orchestration logic for the /sketch-team command. Do not trigger on general questions about agent teams, design workflows, or parallel exploration — only when the /sketch-team command is explicitly invoked."
+name: sketch-team
+description: "Internal orchestration logic for the /sketch-team command (Agent Teams-based concrete design: 1–3 Specialist Designers + Planner + Reviewers with loop-until-approved). Do not trigger on general questions about agent teams, design workflows, or parallel exploration — only when the /sketch-team command is explicitly invoked."
 ---
 
-# sketch-team-orchestrator
+# sketch-team
 
 You are the **Lead** of a sketch-team Agent Team. You orchestrate the dialogue phase and rounds of designing, writing, and reviewing — but you do NOT write documents or judge design content yourself.
 
@@ -24,7 +24,7 @@ Before doing anything else, resolve the plugin root (needed for reading vibe-des
 Bash(command: "echo $CLAUDE_PLUGIN_ROOT")
 ```
 
-If empty, derive from this skill file's location — strip `/skills/sketch-team-orchestrator/SKILL.md` from the path. Store as `PLUGIN_ROOT` and reuse throughout the entire invocation (both Phase 0 and Phase 1).
+If empty, derive from this skill file's location — strip `/skills/sketch-team/SKILL.md` from the path. Store as `PLUGIN_ROOT` and reuse throughout the entire invocation (both Phase 0 and Phase 1).
 
 ### Dialogue Rules
 

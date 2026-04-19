@@ -1,11 +1,11 @@
 {
   "name": "damascus",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "Forge documents through iterative multi-LLM review — like Damascus steel, stronger through repeated folding.",
   "author": {
     "name": "flashwade03"
   },
-  "repository": "https://github.com/flashwade03/Damascus-For-Claude-Code",
+  "repository": "https://github.com/flashwade03/fablers-claude-plugins",
   "license": "MIT",
   "keywords": ["forge", "review", "multi-llm", "planning", "documentation"]
 }

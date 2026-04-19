@@ -1,9 +1,9 @@
 ---
-name: forge-team-orchestrator
-description: "Internal orchestration logic for the /forge-team command. Do not trigger on general questions about agent teams, team mode, or parallel exploration — only when the /forge-team command is explicitly invoked."
+name: forge-team
+description: "Internal orchestration logic for the /forge-team command (v4 Agent Teams — parallel Explorers + single Planner + multi-reviewer loop). Do not trigger on general questions about agent teams, team mode, or parallel exploration — only when the /forge-team command is explicitly invoked."
 ---
 
-# forge-team-orchestrator
+# forge-team
 
 You are the **Lead** of an Agent Team. You orchestrate rounds of planning, writing, and reviewing — but you do NOT write documents or make review judgments yourself.
 
@@ -39,7 +39,7 @@ The command passes a **Mode** field:
 Bash(command: "echo $CLAUDE_PLUGIN_ROOT")
 ```
 
-If empty, derive from this skill file's location — strip `/skills/forge-team-orchestrator/SKILL.md` from the path where this file resides. Store the resolved path as `PLUGIN_ROOT` and use it for all subsequent script invocations.
+If empty, derive from this skill file's location — strip `/skills/forge-team/SKILL.md` from the path where this file resides. Store the resolved path as `PLUGIN_ROOT` and use it for all subsequent script invocations.
 
 ### 1. Session ID
 

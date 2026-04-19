@@ -137,8 +137,8 @@ Agent Teams 모드는 Claude Code의 [Agent Teams](https://docs.anthropic.com/en
 
 ```bash
 # 마켓플레이스 추가 및 설치
-/plugin marketplace add flashwade03/Damascus-For-Claude-Code
-/plugin install damascus@planner
+/plugin marketplace add flashwade03/fablers-claude-plugins
+/plugin install damascus@fablers
 ```
 
 첫 세션 시작 시 Damascus가 프로젝트 디렉토리에 `.claude/damascus.local.md`를 자동 생성합니다. 외부 리뷰어를 활성화하려면 API 키를 입력하세요.
@@ -235,9 +235,10 @@ enable_claude_review: true
 
 ## 변경 이력
 
-- **4.0.4** — 스킬 description을 커맨드 전용 트리거로 축소, forge-team 커맨드를 Explorer + Single Planner 아키텍처에 맞게 수정
+- **4.0.5** — 스킬명 명확화 리네임: `forge-orchestrator` → `forge-sequential`, `forge-team-orchestrator` → `forge-team`, `agent-teams-debugger` → `forge-team-debugger`. 사용자가 쓰는 API에는 변화 없음 — 커맨드와 동작은 동일.
+- **4.0.4** — 스킬 description을 해당 커맨드 호출 시에만 발동하도록 축소해 타 맥락에서의 오발동 방지, forge-team 커맨드를 Explorer + Single Planner 아키텍처에 맞게 수정
 - **4.0.3** — 스킬 YAML frontmatter 수정: kebab-case 이름, description 따옴표 처리로 파싱 에러 해결
-- **4.0.2** — forge-team-orchestrator 스킬 description 최적화 (역할 설명, 트리거 키워드, 오발동 방지 조건 추가)
+- **4.0.2** — forge-team 스킬 description 최적화 (역할 설명, 트리거 키워드, 오발동 방지 조건 추가)
 - **4.0.1** — Explorer 크로스 폴리네이션 수정 (Planner 매개), 조건부 리뷰어 스폰 (활성화된 리뷰어만 생성)
 - **4.0.0** — Agent Teams 모드 (`/forge-team`): 병렬 Explorer + 전담 Planner + Scribe + 독립 Reviewer를 라이브 팀원으로 운용. resume 없이 라운드 간 전체 컨텍스트 보존. [v3 vs v4 비교](docs/v4-comparison/)
 - **3.3.0** — 반복 간 에이전트 resume (코드베이스 컨텍스트 보존), writer agent 제거, foreground parallel 리뷰, 리뷰 히스토리 압축, 모든 리뷰어에 `--mode` plan/doc 전달, session ID fallback

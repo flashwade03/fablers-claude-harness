@@ -29,7 +29,7 @@ openai_api_key: sk-...
 
 ## How it works
 
-The `/ask <question>` command runs a streamlined 3-agent pipeline with complexity branching:
+The `/rag-ask <question>` command runs a streamlined 3-agent pipeline with complexity branching:
 
 **Simple questions** (1 agent call):
 1. Skill generates 2 search queries directly
@@ -43,5 +43,5 @@ The `/ask <question>` command runs a streamlined 3-agent pipeline with complexit
 4. **Answer Synthesizer** — Produces a cited answer with `[Source N]` references
 
 Additional commands:
-- `/search <query>` — Run a direct hybrid search and see raw results
+- `/rag-search <query>` — Run a direct hybrid search and see raw results
 - `/ingest <file>` — Index a new document (PDF, TXT, or Markdown)

@@ -12,7 +12,7 @@ TEMPLATE_SRC="$PLUGIN_ROOT/damascus.template.md"
 
 # --- 1. 설치 검증 ---
 MISSING=()
-for f in "commands/forge.md" "skills/forge-orchestrator/SKILL.md" "scripts/utils.ts"; do
+for f in "commands/forge.md" "skills/forge-sequential/SKILL.md" "scripts/utils.ts"; do
   [ ! -f "$PLUGIN_ROOT/$f" ] && MISSING+=("$f")
 done
 
